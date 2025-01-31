@@ -3,7 +3,7 @@
 <head>
     <title>Sourdough Calculator Pro</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google AdSense (Replace with your ID) -->
+    <!-- Google AdSense (replace with your ID) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_ID" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -12,30 +12,33 @@
         
         <!-- Input Section -->
         <div class="input-group">
-            <label>Number of Loaves: <input type="number" id="loaves" value="1" min="1"></label>
-            <label>Total Flour per Loaf (g): <input type="number" id="flour" value="500"></label>
-            <label>Hydration (%): <input type="range" id="hydration" min="50" max="100" value="70"> <span id="hydrationValue">70%</span></label>
+            <label>Number of Loaves: 
+                <input type="number" id="loaves" value="1" min="1">
+            </label>
+            
+            <label>Dough Weight per Loaf (g): 
+                <input type="number" id="doughWeight" value="800">
+            </label>
+            
+            <label>Hydration (%): 
+                <input type="range" id="hydration" min="60" max="85" value="70"> 
+                <span id="hydrationValue">70%</span>
+            </label>
+            
+            <label>Starter Type: 
+                <select id="starterHydration">
+                    <option value="50">Stiff (50%)</option>
+                    <option value="100" selected>Liquid (100%)</option>
+                </select>
+            </label>
+            
+            <label>Ambient Temperature (°C): 
+                <input type="number" id="temperature" value="22">
+            </label>
         </div>
 
-        <!-- Starter Settings Tab -->
-        <div class="tab">
-            <button class="tablink" onclick="openTab(event, 'starter')">Starter Settings</button>
-            <button class="tablink" onclick="openTab(event, 'bakers')">Baker's %</button>
-        </div>
-
-        <!-- Starter Tab Content -->
-        <div id="starter" class="tabcontent">
-            <label>Starter Hydration (%): <input type="number" id="starterHydration" value="100"></label>
-            <label>Starter in Recipe (%): <input type="number" id="starterPercent" value="20"></label>
-        </div>
-
-        <!-- Baker's % Tab Content -->
-        <div id="bakers" class="tabcontent">
-            <div id="bakersPercentages"></div>
-        </div>
-
-        <!-- Calculate Button -->
-        <button onclick="calculateRecipe()">Generate Workflow</button>
+        <!-- Generate Button -->
+        <button onclick="generateRecipe()">Generate Recipe & Schedule</button>
 
         <!-- Results -->
         <div id="results"></div>
