@@ -1,14 +1,71 @@
-function generateRecipe() {
-    // ... previous calculations remain the same
+let isCelsius = true;
 
-    // Detailed timeline generation
+function toggleUnit() {
+    const tempInput = document.getElementById('temperature');
+    const currentTemp = parseFloat(tempInput.value);
+    
+    if(isCelsius) {
+        tempInput.value = Math.round(currentTemp * 9/5 + 32);
+    } else {
+        tempInput.value = Math.round((currentTemp - 32) * 5/9);
+    }
+    isCelsius = !isCelsius;
+}
+
+document.getElementById('hydration').addEventListener('input', (e) => {
+    document.getElementById('hydrationValue').textContent = `${e.target.value}%`;
+});
+
+function generateRecipe() {
+    const loaves = parseInt(document.getElementById('loaves').value);
+    const doughWeight = parseInt(document.getElementById('doughWeight').value);
+    const hydration = parseInt(document.getElementById('hydration').value);
+    const temperature = parseFloat(document.getElementById('temperature').value);
+    const starterType = document.getElementById('starterType').value;
+
+    // Calculations
+    const totalDough = doughWeight * loaves;
+    const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
+    const starterRatio = 0.2;
+    
+    const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
+    const totalWater = totalFlour * (hydration/100);
+    const starterAmount = totalFlour * starterRatio;
+    
+    const starterFlour = starterAmount / (1 + starterHydration);
+    const starterWater = starterAmount - starterFlour;
+    
+    const mainFlour = totalFlour - starterFlour;
+    const mainWater = totalWater - starterWater;
+    const salt = totalFlour * 0.02;
+
+    // Timing calculations
+    const baseTemp = 20;
+    const tempFactor = baseTemp / temperature;
+    const bulkTime = Math.round(4 * 60 * tempFactor);
+    const proofTime = Math.round(2 * 60 * tempFactor);
+
+    // Generate Results
+    const ingredientsHTML = `
+        <h2>Ingredients</h2>
+        <div class="schedule-step">
+            <p>Main Flour: <strong>${Math.round(mainFlour)}g</strong></p>
+            <p>Water: <strong>${Math.round(mainWater)}g</strong></p>
+            <p>Salt: <strong>${Math.round(salt)}g</strong></p>
+            <p>Starter: <strong>${Math.round(starterAmount)}g</strong> (${starterType})</p>
+        </div>
+    `;
+
+    // Detailed schedule generation
     const now = new Date();
     const feedingTime = new Date(now.getTime() - (12 * 60 * 60 * 1000));
     
     const scheduleHTML = `
+        <h2>Complete Baking Schedule</h2>
+        
         <div class="schedule-step">
             <h3><span class="timeline-marker">Starter Preparation</span></h3>
-            <div class="process-steps">
+            <ul class="process-steps">
                 <li>
                     <strong>${formatTime(feedingTime)}:</strong> Feed starter
                     <br>${starterType === 'stiff' ? 
@@ -24,12 +81,12 @@ function generateRecipe() {
                     <strong>Next 12 hours:</strong> Maintain temperature between 
                     ${temperature-2}°-${temperature+2}°${isCelsius ? 'C' : 'F'}
                 </li>
-            </div>
+            </ul>
         </div>
 
         <div class="schedule-step">
             <h3><span class="timeline-marker">Dough Preparation</span></h3>
-            <div class="process-steps">
+            <ul class="process-steps">
                 <li>
                     <strong>${formatTime(8,30)}:</strong> Autolyse
                     <br>Mix ${Math.round(mainFlour)}g flour + ${Math.round(mainWater)}g water
@@ -47,12 +104,12 @@ function generateRecipe() {
                         <li>${formatTime(11,15)}: Final fold</li>
                     </ul>
                 </li>
-            </div>
+            </ul>
         </div>
 
         <div class="schedule-step">
             <h3><span class="timeline-marker">Shaping & Baking</span></h3>
-            <div class="process-steps">
+            <ul class="process-steps">
                 <li>
                     <strong>${formatTime(1,30)}:</strong> Pre-shape
                     <br>Divide into ${loaves} x ${doughWeight}g pieces
@@ -78,17 +135,17 @@ function generateRecipe() {
                     <strong>${formatTime(6,30)}:</strong> Cool
                     <br>2 hours minimum on wire rack
                 </li>
-            </div>
+            </ul>
         </div>
     `;
 
+    document.getElementById('results').innerHTML = ingredientsHTML;
     document.getElementById('schedule').innerHTML = scheduleHTML;
 }
 
-// Time formatting helper
 function formatTime(hours, minutes) {
     const time = new Date();
-    if(typeof hours === 'object') { // Handle Date object
+    if(typeof hours === 'object') {
         return hours.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
     }
     time.setHours(hours, minutes || 0);
