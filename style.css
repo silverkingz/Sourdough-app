@@ -54,3 +54,11 @@ button:hover {
     border-left: 3px solid #4CAF50;
     background: white;
 }
+
+.unit-toggle { margin-bottom: 15px; }
+.unit-toggle label { margin-right: 15px; }
+input[type="datetime-local"] { width: 200px; }
+.tooltip {
+    cursor: help;
+    border-bottom: 1px dotted #666;
+}
