@@ -26,6 +26,7 @@ body {
     border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 1rem;
     margin-bottom: 2rem;
+    text-align: center;
 }
 
 .input-group {
@@ -63,6 +64,11 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.unit-btn:hover {
+    background: #6b544a;
 }
 
 .form-select {
@@ -91,6 +97,7 @@ body {
 
 .generate-btn:hover {
     background: #4a322b;
+    transform: translateY(-1px);
 }
 
 .results-container {
@@ -123,6 +130,7 @@ body {
     padding: 0.8rem;
     background: white;
     border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .temp-badge {
@@ -139,6 +147,7 @@ body {
     padding: 1rem;
     background: white;
     border-radius: 6px;
+    border: 1px solid #eee;
 }
 
 .disclaimer-note {
@@ -148,4 +157,12 @@ body {
     border-radius: 6px;
     font-size: 0.9em;
     color: #5d4037;
+    border-left: 3px solid #ffab40;
+}
+
+.special-instruction {
+    color: #8d6e63;
+    padding: 0.5rem;
+    border-left: 3px solid #8d6e63;
+    margin: 1rem 0;
 }
