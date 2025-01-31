@@ -2,87 +2,299 @@
 <html>
 <head>
     <title>Sourdough Calculator Pro</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff8e5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        select, input[type="number"] {
+            padding: 5px;
+            margin: 5px 0;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .schedule-step {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #4CAF50;
+            background: #f9f9f9;
+        }
+
+        .donation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍞 Artisan Sourdough Calculator</h1>
+        <h1>🍞 Sourdough Calculator Pro</h1>
 
-        <!-- Recipe Tabs -->
-        <div class="tabs">
-            <button class="tablink active" onclick="openRecipe(event, 'white')">Classic White</button>
-            <button class="tablink" onclick="openRecipe(event, 'multigrain')">Multigrain</button>
-            <button class="tablink" onclick="openRecipe(event, 'oat')">Oat</button>
-            <button class="tablink" onclick="openRecipe(event, 'jalapeno')">Jalapeño Cheddar</button>
-        </div>
+        <!-- Input Section -->
+        <div class="input-group">
+            <label>Recipe:
+                <select id="recipe">
+                    <option value="white">Classic White</option>
+                    <option value="multigrain">Multigrain</option>
+                    <option value="oat">Oat</option>
+                    <option value="jalapeno">Jalapeño Cheddar</option>
+                </select>
+            </label>
 
-        <!-- Temperature/Starter Tabs -->
-        <div class="subtabs">
-            <button class="subtablink active" onclick="openSubTab(event, 'units')">Units</button>
-            <button class="subtablink" onclick="openSubTab(event, 'starter')">Starter</button>
-        </div>
+            <label>Number of Loaves: 
+                <input type="number" id="loaves" value="1" min="1">
+            </label>
 
-        <!-- Settings Content -->
-        <div id="units" class="subtabcontent" style="display:block">
             <label>Temperature Unit:
-                <select id="unit">
+                <select id="tempUnit">
                     <option value="C">°C</option>
                     <option value="F">°F</option>
                 </select>
             </label>
-        </div>
 
-        <div id="starter" class="subtabcontent">
-            <label>Starter Type:
+            <label>Dough Temperature: 
+                <input type="number" id="temperature" value="22">
+            </label>
+
+            <label>Starter Type: 
                 <select id="starterType">
-                    <option value="stiff">Stiff (50%)</option>
-                    <option value="liquid">Liquid (100%)</option>
+                    <option value="50">Stiff (50%)</option>
+                    <option value="100" selected>Liquid (100%)</option>
                 </select>
             </label>
+
+            <button onclick="generateRecipe()">Generate Recipe & Schedule</button>
         </div>
 
-        <!-- Recipe Content -->
-        <div class="recipe-container">
-            <!-- Classic White (Default) -->
-            <div id="white" class="recipe-content" style="display:block">
-                <div class="recipe-header">
-                    <h2>Classic White Sourdough</h2>
-                    <p class="yield">Yield: 800g loaf</p>
-                </div>
-                <!-- Content will be populated by JavaScript -->
-            </div>
-
-            <!-- Other Recipes -->
-            <div id="multigrain" class="recipe-content">
-                <div class="recipe-header">
-                    <h2>Multigrain Sourdough</h2>
-                    <p class="yield">Yield: 800g loaf</p>
-                </div>
-            </div>
-            <div id="oat" class="recipe-content">
-                <div class="recipe-header">
-                    <h2>Oat Sourdough</h2>
-                    <p class="yield">Yield: 750g loaf</p>
-                </div>
-            </div>
-            <div id="jalapeno" class="recipe-content">
-                <div class="recipe-header">
-                    <h2>Jalapeño Cheddar Sourdough</h2>
-                    <p class="yield">Yield: 800g loaf</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Schedule Generator -->
-        <div class="time-input">
-            <label>Start Time: <input type="text" id="startTime" placeholder="8:00 AM"></label>
-            <button onclick="generateSchedule()">Generate Schedule</button>
-        </div>
-
-        <!-- Schedule Output -->
+        <!-- Results -->
+        <div id="results"></div>
         <div id="schedule"></div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Donation Button -->
+    <div class="donation">
+        <form action="https://www.paypal.com/donate" method="post" target="_blank">
+            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL">
+            <input type="hidden" name="currency_code" value="USD">
+            <button type="submit">☕ Support This Project</button>
+        </form>
+    </div>
+
+    <script>
+        const recipes = {
+            white: {
+                flour: 500,
+                water: 350,
+                salt: 10,
+                steps: [
+                    "Autolyse (mix flour + water)",
+                    "Add starter + salt",
+                    "Bulk fermentation with folds",
+                    "Shape and cold proof",
+                    "Bake at 250°C"
+                ]
+            },
+            multigrain: {
+                flour: 400,
+                water: 300,
+                salt: 10,
+                grains: 100,
+                steps: [
+                    "Soak grains",
+                    "Autolyse with flour + water",
+                    "Add grains + starter + salt",
+                    "Extended bulk fermentation",
+                    "Shape and cold proof",
+                    "Bake at 240°C"
+                ]
+            },
+            oat: {
+                flour: 450,
+                water: 320,
+                salt: 10,
+                oats: 50,
+                steps: [
+                    "Soak oats",
+                    "Autolyse with flour + water",
+                    "Add oats + starter + salt",
+                    "Bulk fermentation with folds",
+                    "Shape and cold proof",
+                    "Bake at 230°C"
+                ]
+            },
+            jalapeno: {
+                flour: 500,
+                water: 350,
+                salt: 10,
+                cheese: 100,
+                jalapenos: 50,
+                steps: [
+                    "Prepare add-ins",
+                    "Autolyse with flour + water",
+                    "Add starter + salt",
+                    "Laminate add-ins",
+                    "Shape and cold proof",
+                    "Bake at 240°C"
+                ]
+            }
+        };
+
+        function generateRecipe() {
+            // Get inputs
+            const recipeType = document.getElementById('recipe').value;
+            const loaves = parseInt(document.getElementById('loaves').value);
+            const tempUnit = document.getElementById('tempUnit').value;
+            const doughTemp = parseFloat(document.getElementById('temperature').value);
+            const starterHydration = parseInt(document.getElementById('starterType').value);
+
+            // Get selected recipe
+            const recipe = recipes[recipeType];
+            
+            // Calculate scaled ingredients
+            const scaledRecipe = {};
+            for(const [key, value] of Object.entries(recipe)) {
+                if(typeof value === 'number') scaledRecipe[key] = value * loaves;
+            }
+
+            // Calculate bulk time based on temperature
+            const bulkHours = calculateBulkTime(
+                tempUnit === 'F' ? (doughTemp - 32) * 5/9 : doughTemp
+            );
+
+            // Generate schedule
+            const now = new Date();
+            const scheduleSteps = [];
+            
+            // Starter feeding (12 hours before autolyse)
+            const starterFeedTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+            scheduleSteps.push(createScheduleStep(
+                "Feed Starter",
+                starterFeedTime,
+                `Mix ${starterHydration === 50 ? '1:2:2' : '1:1:1'} ratio (${starterHydration}% hydration)`
+            ));
+
+            // Autolyse (current time)
+            const autolyseEnd = new Date(now.getTime() + 60 * 60 * 1000);
+            scheduleSteps.push(createScheduleStep(
+                "Autolyse",
+                now,
+                autolyseEnd,
+                recipe.steps[0]
+            ));
+
+            // Bulk fermentation
+            const bulkEnd = new Date(autolyseEnd.getTime() + bulkHours * 60 * 60 * 1000);
+            scheduleSteps.push(createScheduleStep(
+                "Bulk Fermentation",
+                autolyseEnd,
+                bulkEnd,
+                `${recipe.steps[1]} (${bulkHours} hours)`
+            ));
+
+            // Remaining steps (fixed timing)
+            let lastTime = bulkEnd;
+            for(let i = 2; i < recipe.steps.length; i++) {
+                const stepDuration = i === recipe.steps.length - 1 ? 1 : 0.5; // Baking takes 1 hour
+                const stepEnd = new Date(lastTime.getTime() + stepDuration * 60 * 60 * 1000);
+                scheduleSteps.push(createScheduleStep(
+                    `Step ${i + 1}`,
+                    lastTime,
+                    stepEnd,
+                    recipe.steps[i]
+                ));
+                lastTime = stepEnd;
+            }
+
+            // Display results
+            displayResults(scaledRecipe, scheduleSteps, tempUnit);
+        }
+
+        function calculateBulkTime(tempC) {
+            if(tempC >= 25) return 4;
+            if(tempC >= 22) return 5;
+            if(tempC >= 19) return 6;
+            return 7;
+        }
+
+        function createScheduleStep(name, start, end, notes) {
+            return {
+                name,
+                time: `${formatTime(start)} - ${formatTime(end)}`,
+                notes
+            };
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+        }
+
+        function displayResults(recipe, schedule, tempUnit) {
+            // Display ingredients
+            let ingredientsHTML = '<h3>🧾 Scaled Recipe</h3>';
+            for(const [ingredient, amount] of Object.entries(recipe)) {
+                ingredientsHTML += `<p>${ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}: ${amount}g</p>`;
+            }
+
+            // Display schedule
+            let scheduleHTML = '<h3>⏰ Schedule</h3>';
+            schedule.forEach(step => {
+                scheduleHTML += `
+                    <div class="schedule-step">
+                        <strong>${step.name}</strong><br>
+                        <em>${step.time}</em><br>
+                        ${step.notes}
+                    </div>
+                `;
+            });
+
+            document.getElementById('results').innerHTML = ingredientsHTML;
+            document.getElementById('schedule').innerHTML = scheduleHTML;
+        }
+    </script>
 </body>
 </html>
