@@ -27,6 +27,20 @@ input, select {
     margin: 5px 0;
 }
 
+input[type="number"] {
+    width: 100px;
+}
+
+input[type="range"] {
+    width: 150px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
 button {
     padding: 10px 20px;
     background: #4CAF50;
@@ -36,21 +50,25 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: #45a049;
+button[type="submit"] {
+    background: #ffc439;
+    color: black;
 }
 
-#results, #workflow {
+button:hover {
+    opacity: 0.9;
+}
+
+#results, #schedule {
     margin-top: 20px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    background: #f9f9f9;
 }
 
-.step {
-    margin: 15px 0;
+.schedule-step {
+    margin: 10px 0;
     padding: 10px;
     border-left: 3px solid #4CAF50;
-    background: white;
+    background: #f9f9f9;
 }
