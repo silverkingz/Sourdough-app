@@ -6,37 +6,81 @@
 </head>
 <body>
     <div class="container">
-        <h1>🍞 Sourdough Calculator</h1>
-        
-        <!-- Unit Toggle -->
-        <div class="unit-toggle">
-            <label><input type="radio" name="unit" value="C" checked> °C</label>
-            <label><input type="radio" name="unit" value="F"> °F</label>
+        <h1>🍞 Artisan Sourdough Calculator</h1>
+
+        <!-- Recipe Tabs -->
+        <div class="tabs">
+            <button class="tablink active" onclick="openRecipe(event, 'white')">Classic White</button>
+            <button class="tablink" onclick="openRecipe(event, 'multigrain')">Multigrain</button>
+            <button class="tablink" onclick="openRecipe(event, 'oat')">Oat</button>
+            <button class="tablink" onclick="openRecipe(event, 'jalapeno')">Jalapeño Cheddar</button>
         </div>
 
-        <!-- Input Section -->
-        <div class="input-group">
-            <label>Number of Loaves: <input type="number" id="loaves" value="1" min="1"></label>
-            <label>Dough per Loaf (g): <input type="number" id="doughWeight" value="800"></label>
-            <label>Hydration (%): <input type="range" id="hydration" min="60" max="85" value="70"> <span id="hydrationValue">70%</span></label>
-            <label>Starter Type: 
-                <select id="starterHydration">
-                    <option value="50">Stiff (50%)</option>
-                    <option value="100" selected>Liquid (100%)</option>
+        <!-- Temperature/Starter Tabs -->
+        <div class="subtabs">
+            <button class="subtablink active" onclick="openSubTab(event, 'units')">Units</button>
+            <button class="subtablink" onclick="openSubTab(event, 'starter')">Starter</button>
+        </div>
+
+        <!-- Settings Content -->
+        <div id="units" class="subtabcontent" style="display:block">
+            <label>Temperature Unit:
+                <select id="unit">
+                    <option value="C">°C</option>
+                    <option value="F">°F</option>
                 </select>
             </label>
-            <label>Autolyse Start Time: <input type="datetime-local" id="autolyseTime"></label>
-            <label>Dough Temperature: 
-                <input type="number" id="doughTempC" value="22" step="0.1">
-                <span id="doughTempUnit">°C</span>
+        </div>
+
+        <div id="starter" class="subtabcontent">
+            <label>Starter Type:
+                <select id="starterType">
+                    <option value="stiff">Stiff (50%)</option>
+                    <option value="liquid">Liquid (100%)</option>
+                </select>
             </label>
         </div>
 
-        <button onclick="generateRecipe()">Generate Recipe & Schedule</button>
+        <!-- Recipe Content -->
+        <div class="recipe-container">
+            <!-- Classic White (Default) -->
+            <div id="white" class="recipe-content" style="display:block">
+                <div class="recipe-header">
+                    <h2>Classic White Sourdough</h2>
+                    <p class="yield">Yield: 800g loaf</p>
+                </div>
+                <!-- Content will be populated by JavaScript -->
+            </div>
 
-        <!-- Results -->
-        <div id="results"></div>
-        <div id="workflow"></div>
+            <!-- Other Recipes -->
+            <div id="multigrain" class="recipe-content">
+                <div class="recipe-header">
+                    <h2>Multigrain Sourdough</h2>
+                    <p class="yield">Yield: 800g loaf</p>
+                </div>
+            </div>
+            <div id="oat" class="recipe-content">
+                <div class="recipe-header">
+                    <h2>Oat Sourdough</h2>
+                    <p class="yield">Yield: 750g loaf</p>
+                </div>
+            </div>
+            <div id="jalapeno" class="recipe-content">
+                <div class="recipe-header">
+                    <h2>Jalapeño Cheddar Sourdough</h2>
+                    <p class="yield">Yield: 800g loaf</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Generator -->
+        <div class="time-input">
+            <label>Start Time: <input type="text" id="startTime" placeholder="8:00 AM"></label>
+            <button onclick="generateSchedule()">Generate Schedule</button>
+        </div>
+
+        <!-- Schedule Output -->
+        <div id="schedule"></div>
     </div>
 
     <script src="script.js"></script>
