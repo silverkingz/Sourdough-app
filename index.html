@@ -1,24 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sourdough Calculator Pro</title>
+    <title>Classic Sourdough Calculator</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🍞 Sourdough Calculator Pro</h1>
+        <h1>🍞 Classic Sourdough Calculator</h1>
 
         <!-- Input Section -->
         <div class="input-group">
-            <label>Recipe:
-                <select id="recipe">
-                    <option value="white">Classic White</option>
-                    <option value="multigrain">Multigrain</option>
-                    <option value="oat">Oat</option>
-                    <option value="jalapeno">Jalapeño Cheddar</option>
-                </select>
-            </label>
-
             <label>Number of Loaves: 
                 <input type="number" id="loaves" value="1" min="1">
             </label>
@@ -32,12 +23,8 @@
                 <span id="hydrationValue">70%</span>
             </label>
 
-            <label>Temperature: 
+            <label>Temperature (°C): 
                 <input type="number" id="temperature" value="22" step="0.1">
-                <select id="tempUnit">
-                    <option value="C">°C</option>
-                    <option value="F">°F</option>
-                </select>
             </label>
 
             <label>Starter Type: 
@@ -54,7 +41,7 @@
             <form action="https://www.paypal.com/donate" method="post" target="_blank">
                 <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL">
                 <input type="hidden" name="currency_code" value="USD">
-                <button type="submit">☕ Support This Project</button>
+                <button type="submit" class="paypal-button">☕ Support This Project</button>
             </form>
         </div>
 
