@@ -1,94 +1,88 @@
 let isCelsius = true;
 
 function toggleUnit() {
-    isCelsius = !isCelsius;
     const tempInput = document.getElementById('temperature');
-    if (isCelsius) {
-        tempInput.value = Math.round((tempInput.value - 32) * 5/9);
+    const currentTemp = parseFloat(tempInput.value);
+    
+    if(isCelsius) {
+        tempInput.value = Math.round(currentTemp * 9/5 + 32);
     } else {
-        tempInput.value = Math.round((tempInput.value * 9/5) + 32);
+        tempInput.value = Math.round((currentTemp - 32) * 5/9);
     }
+    isCelsius = !isCelsius;
 }
 
-document.getElementById('hydration').addEventListener('input', function(e) {
+document.getElementById('hydration').addEventListener('input', (e) => {
     document.getElementById('hydrationValue').textContent = `${e.target.value}%`;
 });
 
-function calculateRecipe() {
+function generateRecipe() {
     const loaves = parseInt(document.getElementById('loaves').value);
     const doughWeight = parseInt(document.getElementById('doughWeight').value);
     const hydration = parseInt(document.getElementById('hydration').value);
     const temperature = parseFloat(document.getElementById('temperature').value);
     const starterType = document.getElementById('starterType').value;
 
-    // Calculate total dough weight
+    // Calculations
     const totalDough = doughWeight * loaves;
-
-    // Calculate starter parameters
     const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
     const starterRatio = 0.2;
-
-    // Calculate total flour and water
+    
     const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
-    const totalWater = (totalFlour * hydration/100);
+    const totalWater = totalFlour * (hydration/100);
     const starterAmount = totalFlour * starterRatio;
-
-    // Calculate starter components
+    
     const starterFlour = starterAmount / (1 + starterHydration);
     const starterWater = starterAmount - starterFlour;
-
-    // Calculate final ingredients
+    
     const mainFlour = totalFlour - starterFlour;
     const mainWater = totalWater - starterWater;
     const salt = totalFlour * 0.02;
 
-    // Calculate fermentation times
+    // Timing calculations
     const baseTemp = 20;
     const tempFactor = baseTemp / temperature;
-    const bulkFermentation = Math.round(4 * 60 * tempFactor);
+    const bulkTime = Math.round(4 * 60 * tempFactor);
     const proofTime = Math.round(2 * 60 * tempFactor);
 
-    // Generate schedule
-    const schedule = `
-        <h3>Ingredients:</h3>
-        <ul>
-            <li>Main flour: ${Math.round(mainFlour)}g</li>
-            <li>Water: ${Math.round(mainWater)}g</li>
-            <li>Salt: ${Math.round(salt)}g</li>
-            <li>Starter: ${Math.round(starterAmount)}g (${starterType})</li>
-        </ul>
-
-        <h3>Schedule:</h3>
-        <ol>
-            <li>12 hours before: Feed starter</li>
-            <li>Mix all ingredients (autolyse)</li>
-            <li>Bulk fermentation: ${bulkFermentation} minutes</li>
-            <li>Shape dough</li>
-            <li>Final proof: ${proofTime} minutes</li>
-            <li>Bake at 250°C for 30 minutes</li>
-        </ol>
+    // Generate Results
+    const ingredientsHTML = `
+        <h2>Ingredients</h2>
+        <div class="schedule-step">
+            <p>Main Flour: <strong>${Math.round(mainFlour)}g</strong></p>
+            <p>Water: <strong>${Math.round(mainWater)}g</strong></p>
+            <p>Salt: <strong>${Math.round(salt)}g</strong></p>
+            <p>Starter: <strong>${Math.round(starterAmount)}g</strong> (${starterType})</p>
+        </div>
     `;
 
-    document.getElementById('results').innerHTML = schedule;
-}
+    const scheduleHTML = `
+        <h2>Baking Schedule</h2>
+        <div class="schedule-step">
+            <h3>Starter Feeding (12 hours before)</h3>
+            <p>${starterType === 'stiff' ? 
+                '100g mature starter + 500g flour + 250g water' : 
+                '100g mature starter + 400g flour + 400g water'}</p>
+            <span class="temperature-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span>
+        </div>
 
-// PayPal integration
-document.addEventListener('DOMContentLoaded', function() {
-    paypal.Buttons({
-        style: {
-            shape: 'rect',
-            color: 'gold',
-            layout: 'horizontal',
-            label: 'donate'
-        },
-        createOrder: function(data, actions) {
-            return actions.order.create({
-                purchase_units: [{
-                    amount: {
-                        value: '5.00'
-                    }
-                }]
-            });
-        }
-    }).render('#paypal-button-container');
-});
+        <div class="schedule-step">
+            <h3>Day 1: Preparation</h3>
+            <p>8:30 AM: Autolyse (mix flour & water)</p>
+            <p>9:30 AM: Add starter and salt</p>
+            <p>9:30 AM - 1:30 PM: Bulk fermentation (${bulkTime} minutes)</p>
+            <p>→ Perform 4 stretch & fold sets every 30 minutes</p>
+        </div>
+
+        <div class="schedule-step">
+            <h3>Day 2: Baking</h3>
+            <p>1:30 PM: Divide into ${loaves} loaves</p>
+            <p>2:00 PM: Final proof (${proofTime} minutes)</p>
+            <p>6:00 PM: Bake at 250°C/480°F</p>
+            <p>→ 20 mins covered + 25-30 mins uncovered</p>
+        </div>
+    `;
+
+    document.getElementById('results').innerHTML = ingredientsHTML;
+    document.getElementById('schedule').innerHTML = scheduleHTML;
+}
