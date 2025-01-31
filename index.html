@@ -3,20 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sourdough Calculator Pro</title>
+    <title>Sourdough Calculator v2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="main-title">Sourdough Calculator</h1>
+        <h1 class="main-title">🥖 Sourdough Calculator v2.0</h1>
         
+        <div class="input-group">
+            <label>Bread Type:</label>
+            <select id="breadType" class="form-select">
+                <option value="white">Classic White</option>
+                <option value="oat">Oat</option>
+                <option value="multigrain">Multigrain</option>
+                <option value="cheddar">Cheddar Jalapeño</option>
+            </select>
+        </div>
+
         <div class="input-group">
             <label>Number of loaves:</label>
             <input type="number" id="loaves" min="1" value="1" class="form-input">
         </div>
 
         <div class="input-group">
-            <label>Dough weight per loaf (g):</label>
+            <label>Dough weight per loaf (grams):</label>
             <input type="number" id="doughWeight" min="300" value="800" class="form-input">
         </div>
 
