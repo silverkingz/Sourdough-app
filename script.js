@@ -16,14 +16,25 @@ document.getElementById('hydration').addEventListener('input', (e) => {
     document.getElementById('hydrationValue').textContent = e.target.value;
 });
 
-function calculateBulkTime(temperature) {
-    // Base fermentation time at 24°C = 4 hours (240 minutes)
+function calculateBulkTime(temp) {
+    // Q10 temperature coefficient for fermentation (2.5 typical for yeast)
     const baseTemp = 24;
-    const baseTime = 240;
-    // Calculate temperature difference factor
-    const tempDifference = baseTemp / temperature;
-    // Apply non-linear scaling
-    return Math.round(baseTime * Math.pow(tempDifference, 1.5));
+    const baseTime = 240; // 4 hours at 24°C
+    return Math.round(baseTime * Math.pow(2.5, (baseTemp - temp)/10));
+}
+
+function calculateFeedingTime(temp) {
+    // Base feeding time: 12 hours at 22°C for 1:4:4 feeding
+    const baseTemp = 22;
+    const baseTime = 720; // 12 hours in minutes
+    const adjustedTime = baseTime * Math.pow(2.5, (baseTemp - temp)/10);
+    return Math.max(360, Math.round(adjustedTime)); // Never less than 6 hours
+}
+
+function formatDuration(minutes) {
+    const hours = Math.floor(minutes/60);
+    const mins = minutes % 60;
+    return `${hours}h${mins.toString().padStart(2, '0')}`;
 }
 
 function generateRecipe() {
@@ -51,17 +62,18 @@ function generateRecipe() {
 
     // Timing calculations
     const bulkMinutes = calculateBulkTime(temperature);
-    const bulkHours = (bulkMinutes/60).toFixed(1);
-    const proofTime = Math.round(bulkMinutes * 0.5);
+    const feedingMinutes = calculateFeedingTime(temperature);
+    const proofMinutes = Math.round(bulkMinutes * 0.5);
 
     // Generate Results
     const resultsHTML = `
         <div class="schedule-step">
-            <h3 class="step-title">Starter Feeding (12 hours before)</h3>
+            <h3 class="step-title">Starter Feeding</h3>
             <p>${starterType === 'stiff' ? 
                 'Mix 100g mature starter with 500g flour and 250g water (1:5:2.5 ratio)' : 
                 'Mix 100g mature starter with 400g flour and 400g water (1:4:4 ratio)'}</p>
-            <p>Maintain temperature at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>Fermentation time: <span class="temp-badge">${formatDuration(feedingMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>Look for 50-70% rise and bubbly surface</p>
         </div>
 
         <div class="schedule-step">
@@ -76,10 +88,10 @@ function generateRecipe() {
 
         <div class="schedule-step">
             <h3 class="step-title">Bulk Fermentation</h3>
-            <p>Total time: ${bulkHours} hours at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>Total time: <span class="temp-badge">${formatDuration(bulkMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
             <p>1. Mix ingredients and autolyse (30 minutes)</p>
             <p>2. Perform 4 sets of stretch and folds (every 30 minutes)</p>
-            <p>3. Rest remaining time until ${Math.round(70 + (temperature/24 * 30))}% volume increase</p>
+            <p>3. Rest until ${Math.round(70 + (temperature/24 * 30))}% volume increase</p>
         </div>
 
         <div class="schedule-step">
@@ -89,7 +101,7 @@ function generateRecipe() {
             <p>3. Final shape into tight batards/boules</p>
             <div class="proof-options">
                 <p><strong>Proofing Options:</strong></p>
-                <p>• Room temp (${temperature}°${isCelsius ? 'C' : 'F'}): ${proofTime} minutes</p>
+                <p>• Room temp (${temperature}°${isCelsius ? 'C' : 'F'}): ${formatDuration(proofMinutes)}</p>
                 <p>• Cold proof: 12-16 hours in refrigerator</p>
             </div>
         </div>
