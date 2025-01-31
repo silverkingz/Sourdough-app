@@ -1,131 +1,169 @@
-let isCelsius = true;
-
-// Unit Toggle
-document.querySelectorAll('input[name="unit"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        isCelsius = e.target.value === 'C';
-        const doughTempInput = document.getElementById('doughTempC');
-        const currentTemp = parseFloat(doughTempInput.value);
-        doughTempInput.value = isCelsius ? fahrenheitToCelsius(currentTemp) : celsiusToFahrenheit(currentTemp);
-        document.getElementById('doughTempUnit').textContent = isCelsius ? '°C' : '°F';
-    });
-});
-
-// Unit Converters
-function celsiusToFahrenheit(c) { return (c * 9/5) + 32; }
-function fahrenheitToCelsius(f) { return (f - 32) * 5/9; }
+const recipes = {
+    white: {
+        baseWeight: 800,  // Reference dough weight for 1 loaf
+        ingredients: { flour: 500, water: 350, salt: 10 },
+        steps: [
+            "Autolyse (mix flour + water)",
+            "Add starter + salt",
+            "Bulk fermentation with folds",
+            "Shape and cold proof",
+            "Bake at 250°C"
+        ]
+    },
+    multigrain: {
+        baseWeight: 800,
+        ingredients: { flour: 400, water: 300, salt: 10, grains: 100 },
+        steps: [
+            "Soak grains",
+            "Autolyse with flour + water",
+            "Add grains + starter + salt",
+            "Extended bulk fermentation",
+            "Shape and cold proof",
+            "Bake at 240°C"
+        ]
+    },
+    oat: {
+        baseWeight: 750,
+        ingredients: { flour: 450, water: 320, salt: 10, oats: 50 },
+        steps: [
+            "Soak oats",
+            "Autolyse with flour + water",
+            "Add oats + starter + salt",
+            "Bulk fermentation with folds",
+            "Shape and cold proof",
+            "Bake at 230°C"
+        ]
+    },
+    jalapeno: {
+        baseWeight: 800,
+        ingredients: { flour: 500, water: 350, salt: 10, cheese: 100, jalapenos: 50 },
+        steps: [
+            "Prepare add-ins",
+            "Autolyse with flour + water",
+            "Add starter + salt",
+            "Laminate add-ins",
+            "Shape and cold proof",
+            "Bake at 240°C"
+        ]
+    }
+};
 
 function generateRecipe() {
-    // Get Inputs
-    const loaves = parseFloat(document.getElementById("loaves").value) || 1;
-    const doughPerLoaf = parseFloat(document.getElementById("doughWeight").value) || 800;
-    const hydration = parseFloat(document.getElementById("hydration").value) / 100 || 0.7;
-    const starterHydration = parseFloat(document.getElementById("starterHydration").value) / 100 || 1;
-    const autolyseTime = document.getElementById("autolyseTime").value ? new Date(document.getElementById("autolyseTime").value) : new Date();
-    let doughTemp = parseFloat(document.getElementById("doughTempC").value) || 22;
-    doughTemp = isCelsius ? doughTemp : fahrenheitToCelsius(doughTemp); // Always use °C internally
+    // Clear previous results
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('schedule').innerHTML = '';
 
-    // Constants
-    const SALT_PERCENT = 0.02;
-    const STARTER_PERCENT = 0.2;
+    // Get inputs
+    const recipeType = document.getElementById('recipe').value;
+    const loaves = parseInt(document.getElementById('loaves').value) || 1;
+    const doughPerLoaf = parseInt(document.getElementById('doughWeight').value) || recipes[recipeType].baseWeight;
+    const hydration = parseInt(document.getElementById('hydration').value) / 100 || 0.7;
+    const tempUnit = document.getElementById('tempUnit').value;
+    const doughTemp = parseFloat(document.getElementById('temperature').value) || 22;
+    const starterHydration = parseInt(document.getElementById('starterType').value) / 100 || 1;
 
-    // Recipe Calculations (same as before)
-    const totalDough = doughPerLoaf * loaves;
-    const totalFlour = totalDough / (1 + hydration + STARTER_PERCENT);
-    const totalWater = totalFlour * hydration;
-    const starterAmount = totalFlour * STARTER_PERCENT;
-    const starterFlour = starterAmount / (1 + starterHydration);
-    const starterWater = starterAmount - starterFlour;
-    const finalFlour = totalFlour - starterFlour;
-    const finalWater = totalWater - starterWater;
-    const salt = totalFlour * SALT_PERCENT;
+    // Get selected recipe
+    const recipe = recipes[recipeType];
+    if (!recipe) {
+        alert("Please select a valid recipe.");
+        return;
+    }
 
-    // Display Recipe
-    document.getElementById("results").innerHTML = `
-        <h3>Recipe for ${loaves} Loaf${loaves > 1 ? 's' : ''}</h3>
-        <p>Total Dough: <strong>${totalDough.toFixed(1)}g</strong></p>
-        <p>Flour: ${finalFlour.toFixed(1)}g</p>
-        <p>Water: ${finalWater.toFixed(1)}g</p>
-        <p>Starter: ${starterFlour.toFixed(1)}g flour + ${starterWater.toFixed(1)}g water</p>
-        <p>Salt: ${salt.toFixed(1)}g</p>
-    `;
+    // Calculate scaling factor
+    const scalingFactor = (doughPerLoaf / recipe.baseWeight) * loaves;
 
-    // Generate Workflow
-    const steps = [];
-    const startTime = autolyseTime;
+    // Scale ingredients
+    const scaledIngredients = {};
+    for (const [ingredient, amount] of Object.entries(recipe.ingredients)) {
+        scaledIngredients[ingredient] = Math.round(amount * scalingFactor);
+    }
 
-    // Starter Feeding (12-14h before autolyse)
-    const starterFeedTime = new Date(startTime.getTime() - 13 * 60 * 60 * 1000); // 13h prior
-    steps.push(`
-        <div class="step">
-            <strong>Feed Starter</strong><br>
-            ${formatTime(starterFeedTime)}: Mix ${starterFlour.toFixed(1)}g flour + ${starterWater.toFixed(1)}g water<br>
-            <em>(${starterHydration * 100}% hydration starter)</em>
-        </div>
-    `);
+    // Adjust hydration
+    const totalFlour = scaledIngredients.flour;
+    const targetWater = totalFlour * hydration;
+    scaledIngredients.water = Math.round(targetWater);
 
-    // Autolyse
-    const autolyseEnd = new Date(startTime.getTime() + 60 * 60 * 1000);
-    steps.push(`
-        <div class="step">
-            <strong>Autolyse</strong><br>
-            ${formatTime(startTime)} - ${formatTime(autolyseEnd)}: Mix flour + water
-        </div>
-    `);
+    // Calculate bulk time
+    const tempC = tempUnit === 'F' ? (doughTemp - 32) * 5/9 : doughTemp;
+    const bulkHours = calculateBulkTime(tempC);
 
-    // Bulk Fermentation (temperature-adjusted)
-    const bulkHours = calculateBulkTime(doughTemp);
-    const bulkEnd = new Date(autolyseEnd.getTime() + bulkHours * 60 * 60 * 1000);
-    steps.push(`
-        <div class="step">
-            <strong>Bulk Fermentation</strong><br>
-            ${formatTime(autolyseEnd)} - ${formatTime(bulkEnd)} (${bulkHours}hrs)<br>
-            <em>Dough Temp: ${isCelsius ? doughTemp.toFixed(1) + '°C' : celsiusToFahrenheit(doughTemp).toFixed(1) + '°F'}</em>
-        </div>
-    `);
+    // Generate schedule
+    const now = new Date();
+    const scheduleSteps = [];
 
-    // Shaping & Final Proof
-    const shapingEnd = new Date(bulkEnd.getTime() + 0.5 * 60 * 60 * 1000);
-    steps.push(`
-        <div class="step">
-            <strong>Shaping & Final Proof</strong><br>
-            ${formatTime(bulkEnd)} - ${formatTime(shapingEnd)}
-        </div>
-    `);
+    // Starter feeding (12 hours before)
+    const feedTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+    scheduleSteps.push(createScheduleStep(
+        "Feed Starter",
+        feedTime,
+        `Use ${starterHydration * 100}% hydration starter`
+    ));
 
-    // Baking
-    const bakeTemp = isCelsius ? '250°C' : '480°F';
-    const bakeEnd = new Date(shapingEnd.getTime() + 1 * 60 * 60 * 1000);
-    steps.push(`
-        <div class="step">
-            <strong>Baking</strong><br>
-            ${formatTime(shapingEnd)} - ${formatTime(bakeEnd)}: Preheat to ${bakeTemp}, bake 40min.
-        </div>
-    `);
+    // Recipe steps
+    let currentTime = new Date(now.getTime());
+    recipe.steps.forEach((step, index) => {
+        const duration = index === recipe.steps.length - 1 ? 1 :  // Bake time
+                       index === 2 ? bulkHours :                  // Bulk fermentation
+                       0.5;                                       // Other steps
+        const endTime = new Date(currentTime.getTime() + duration * 60 * 60 * 1000);
+        
+        scheduleSteps.push(createScheduleStep(
+            step,
+            currentTime,
+            endTime
+        ));
+        currentTime = endTime;
+    });
 
-    // Display Workflow
-    document.getElementById("workflow").innerHTML = `
-        <h3>⏰ Schedule</h3>
-        ${steps.join('')}
-    `;
+    // Display results
+    displayResults(scaledIngredients, scheduleSteps);
 }
 
-// Helper Functions
-function formatTime(date) {
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-}
-
-function calculateBulkTime(doughTempC) {
-    if (doughTempC >= 25) return 4;
-    if (doughTempC >= 22) return 5;
-    if (doughTempC >= 19) return 6;
+function calculateBulkTime(tempC) {
+    if (tempC >= 25) return 4;
+    if (tempC >= 22) return 5;
+    if (tempC >= 19) return 6;
     return 7;
 }
 
-// Hydration Slider Update
-document.getElementById("hydration").addEventListener("input", function() {
-    document.getElementById("hydrationValue").textContent = `${this.value}%`;
-});
+function createScheduleStep(name, start, end) {
+    return {
+        name,
+        time: `${formatTime(start)} - ${formatTime(end)}`,
+        duration: `${((end - start) / 3600000).toFixed(1)} hours`
+    };
+}
 
-// Initialize Autolyse Time to Now
-document.getElementById("autolyseTime").value = new Date().toISOString().slice(0, 16);
+function formatTime(date) {
+    return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit', 
+        hour12: true 
+    });
+}
+
+function displayResults(ingredients, schedule) {
+    // Ingredients
+    let ingredientsHTML = '<h3>🧾 Ingredients</h3>';
+    for (const [name, amount] of Object.entries(ingredients)) {
+        ingredientsHTML += `<p><strong>${name}:</strong> ${amount}g</p>`;
+    }
+    document.getElementById('results').innerHTML = ingredientsHTML;
+
+    // Schedule
+    let scheduleHTML = '<h3>⏰ Schedule</h3>';
+    schedule.forEach(step => {
+        scheduleHTML += `
+            <div class="schedule-step">
+                <strong>${step.name}</strong><br>
+                <em>${step.time}</em> (${step.duration})
+            </div>
+        `;
+    });
+    document.getElementById('schedule').innerHTML = scheduleHTML;
+}
+
+// Hydration slider update
+document.getElementById('hydration').addEventListener('input', function() {
+    document.getElementById('hydrationValue').textContent = `${this.value}%`;
+});
