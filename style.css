@@ -1,29 +1,29 @@
 :root {
-    --primary-color: #4a4a4a;
-    --secondary-color: #6b4e3d;
-    --highlight-color: #8c735b;
-    --background-color: #f5f0eb;
+    --primary-color: #5d4037;
+    --secondary-color: #8d6e63;
+    --background-color: #fff9f6;
+    --text-color: #3e2723;
 }
 
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     background-color: var(--background-color);
-    color: var(--primary-color);
+    color: var(--text-color);
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-.calculator-container {
+.container {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.calculator-title {
-    color: var(--secondary-color);
-    border-bottom: 2px solid var(--highlight-color);
+.main-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 1rem;
     margin-bottom: 2rem;
 }
@@ -38,11 +38,11 @@ body {
     font-weight: 600;
 }
 
-.input-field {
+.form-input {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
 }
 
@@ -56,30 +56,42 @@ body {
     gap: 0.5rem;
 }
 
-.unit-toggle {
-    background: var(--highlight-color);
+.unit-btn {
+    background: var(--secondary-color);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
-.button-group {
+.form-select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.btn-container {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
 }
 
 .generate-btn {
-    background: var(--secondary-color);
+    background: var(--primary-color);
     color: white;
     padding: 1rem 2rem;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.3s ease;
+}
+
+.generate-btn:hover {
+    background: #4a322b;
 }
 
 .paypal-btn {
@@ -87,35 +99,32 @@ body {
     color: #2d3436;
     padding: 1rem 2rem;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-weight: bold;
 }
 
-/* Results Styling */
-.schedule-section {
+.results-container {
     margin-top: 2rem;
     padding: 1.5rem;
     background: #fffaf5;
     border-radius: 8px;
 }
 
-.schedule-title {
-    color: var(--secondary-color);
-    margin-bottom: 1.5rem;
-}
-
-.process-step {
+.schedule-step {
     margin-bottom: 2rem;
-    padding-left: 1.5rem;
-    border-left: 3px solid var(--highlight-color);
+    padding: 1rem;
+    border-left: 4px solid var(--secondary-color);
+    background: #f8f4f0;
+    border-radius: 6px;
 }
 
-.step-header {
-    color: var(--secondary-color);
+.step-title {
+    color: var(--primary-color);
     margin-bottom: 1rem;
 }
 
@@ -126,24 +135,23 @@ body {
 
 .ingredient-item {
     margin-bottom: 0.5rem;
-    padding: 0.5rem;
-    background: #f8f4f0;
-    border-radius: 4px;
+    padding: 0.8rem;
+    background: white;
+    border-radius: 6px;
 }
 
-.temperature-badge {
-    background: var(--highlight-color);
+.temp-badge {
+    background: var(--secondary-color);
     color: white;
-    padding: 0.2rem 0.8rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 12px;
     font-size: 0.9rem;
     display: inline-block;
-    margin-left: 0.5rem;
 }
 
-.proof-notes {
-    background: #f8f4f0;
-    padding: 1rem;
-    border-radius: 6px;
+.proof-options {
     margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
 }
