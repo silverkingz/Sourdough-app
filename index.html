@@ -1,55 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Classic Sourdough Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sourdough Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5e6d3;
+        }
+
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .temperature-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1;
+            border-radius: 5px;
+        }
+
+        .hydration-display {
+            margin-top: 5px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🍞 Classic Sourdough Calculator</h1>
-
-        <!-- Input Section -->
+    <div class="calculator">
+        <h2>Sourdough Calculator</h2>
+        
         <div class="input-group">
-            <label>Number of Loaves: 
-                <input type="number" id="loaves" value="1" min="1">
-            </label>
-
-            <label>Dough per Loaf (g): 
-                <input type="number" id="doughWeight" value="800" min="400" max="2000">
-            </label>
-
-            <label>Hydration (%): 
-                <input type="range" id="hydration" min="60" max="100" value="70"> 
-                <span id="hydrationValue">70%</span>
-            </label>
-
-            <label>Temperature (°C): 
-                <input type="number" id="temperature" value="22" step="0.1">
-            </label>
-
-            <label>Starter Type: 
-                <select id="starterType">
-                    <option value="50">Stiff (50%)</option>
-                    <option value="100" selected>Liquid (100%)</option>
-                </select>
-            </label>
+            <label>Number of loaves:</label>
+            <input type="number" id="loaves" min="1" value="1">
         </div>
 
-        <!-- Buttons -->
-        <div class="buttons">
-            <button onclick="generateRecipe()">Generate Recipe & Schedule</button>
-            <form action="https://www.paypal.com/donate" method="post" target="_blank">
-                <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL">
-                <input type="hidden" name="currency_code" value="USD">
-                <button type="submit" class="paypal-button">☕ Support This Project</button>
-            </form>
+        <div class="input-group">
+            <label>Dough weight per loaf (grams):</label>
+            <input type="number" id="doughWeight" min="300" value="800">
         </div>
 
-        <!-- Results -->
-        <div id="results"></div>
-        <div id="schedule"></div>
+        <div class="input-group">
+            <label>Hydration (%):</label>
+            <input type="range" id="hydration" min="60" max="100" value="70">
+            <div class="hydration-display" id="hydrationValue">70%</div>
+        </div>
+
+        <div class="input-group">
+            <label>Temperature:</label>
+            <div class="temperature-container">
+                <input type="number" id="temperature" value="20">
+                <div>
+                    <button onclick="toggleUnit()" type="button">°C/°F</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Starter type:</label>
+            <select id="starterType">
+                <option value="stiff">Stiff (50% hydration)</option>
+                <option value="wet">Wet (100% hydration)</option>
+            </select>
+        </div>
+
+        <div class="button-container">
+            <button onclick="calculateRecipe()">Generate Recipe</button>
+            <div id="paypal-button-container"></div>
+        </div>
+
+        <div class="results" id="results"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let isCelsius = true;
+
+        function toggleUnit() {
+            isCelsius = !isCelsius;
+            const tempInput = document.getElementById('temperature');
+            if (isCelsius) {
+                tempInput.value = Math.round((tempInput.value - 32) * 5/9);
+            } else {
+                tempInput.value = Math.round((tempInput.value * 9/5) + 32);
+            }
+        }
+
+        document.getElementById('hydration').addEventListener('input', function(e) {
+            document.getElementById('hydrationValue').textContent = `${e.target.value}%`;
+        });
+
+        function calculateRecipe() {
+            const loaves = parseInt(document.getElementById('loaves').value);
+            const doughWeight = parseInt(document.getElementById('doughWeight').value);
+            const hydration = parseInt(document.getElementById('hydration').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const starterType = document.getElementById('starterType').value;
+
+            // Calculate total dough weight
+            const totalDough = doughWeight * loaves;
+
+            // Calculate starter parameters
+            const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
+            const starterRatio = 0.2; // 20% starter
+
+            // Calculate total flour and water
+            const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
+            const totalWater = (totalFlour * hydration/100);
+            const starterAmount = totalFlour * starterRatio;
+
+            // Calculate starter components
+            const starterFlour = starterAmount / (1 + starterHydration);
+            const starterWater = starterAmount - starterFlour;
+
+            // Calculate final ingredients
+            const mainFlour = totalFlour - starterFlour;
+            const mainWater = totalWater - starterWater;
+            const salt = totalFlour * 0.02;
+
+            // Calculate fermentation times based on temperature
+            const baseTemp = 20; // 20°C base temperature
+            const tempFactor = baseTemp / temperature;
+            const bulkFermentation = Math.round(4 * 60 * tempFactor);
+            const proofTime = Math.round(2 * 60 * tempFactor);
+
+            // Generate schedule
+            const schedule = `
+                <h3>Ingredients:</h3>
+                <ul>
+                    <li>Main flour: ${Math.round(mainFlour)}g</li>
+                    <li>Water: ${Math.round(mainWater)}g</li>
+                    <li>Salt: ${Math.round(salt)}g</li>
+                    <li>Starter: ${Math.round(starterAmount)}g (${starterType})</li>
+                </ul>
+
+                <h3>Schedule:</h3>
+                <ol>
+                    <li>12 hours before: Feed starter</li>
+                    <li>Mix all ingredients (autolyse)</li>
+                    <li>Bulk fermentation: ${bulkFermentation} minutes</li>
+                    <li>Shape dough</li>
+                    <li>Final proof: ${proofTime} minutes</li>
+                    <li>Bake at 250°C for 30 minutes</li>
+                </ol>
+            `;
+
+            document.getElementById('results').innerHTML = schedule;
+        }
+
+        // PayPal button integration
+        document.addEventListener('DOMContentLoaded', function() {
+            paypal.Buttons({
+                style: {
+                    shape: 'rect',
+                    color: 'gold',
+                    layout: 'horizontal',
+                    label: 'donate'
+                },
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '5.00'
+                            }
+                        }]
+                    });
+                }
+            }).render('#paypal-button-container');
+        });
+    </script>
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
 </body>
 </html>
