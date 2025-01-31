@@ -1,159 +1,94 @@
-function generateRecipe() {
-    // Clear previous results
-    const resultsDiv = document.getElementById('results');
-    const scheduleDiv = document.getElementById('schedule');
-    resultsDiv.innerHTML = '';
-    scheduleDiv.innerHTML = '';
+let isCelsius = true;
 
-    // Get input values
-    const loaves = parseInt(document.getElementById('loaves').value) || 1;
-    const doughPerLoaf = parseInt(document.getElementById('doughWeight').value) || 800;
-    const hydration = parseInt(document.getElementById('hydration').value) / 100 || 0.7;
-    const doughTemp = parseFloat(document.getElementById('temperature').value) || 22;
-    const starterHydration = parseInt(document.getElementById('starterType').value) / 100 || 1;
+function toggleUnit() {
+    isCelsius = !isCelsius;
+    const tempInput = document.getElementById('temperature');
+    if (isCelsius) {
+        tempInput.value = Math.round((tempInput.value - 32) * 5/9);
+    } else {
+        tempInput.value = Math.round((tempInput.value * 9/5) + 32);
+    }
+}
 
-    // Base recipe for 1 loaf (800g)
-    const baseRecipe = {
-        flour: 500,
-        water: 350,
-        salt: 10,
-        starter: 100
-    };
+document.getElementById('hydration').addEventListener('input', function(e) {
+    document.getElementById('hydrationValue').textContent = `${e.target.value}%`;
+});
 
-    // Calculate scaled ingredients
-    const scaledRecipe = {
-        flour: Math.round(baseRecipe.flour * (doughPerLoaf / 800) * loaves),
-        salt: Math.round(baseRecipe.salt * (doughPerLoaf / 800) * loaves),
-        starter: Math.round(baseRecipe.starter * (doughPerLoaf / 800) * loaves)
-    };
-    
-    // Adjust water for hydration
-    scaledRecipe.water = Math.round(scaledRecipe.flour * hydration);
+function calculateRecipe() {
+    const loaves = parseInt(document.getElementById('loaves').value);
+    const doughWeight = parseInt(document.getElementById('doughWeight').value);
+    const hydration = parseInt(document.getElementById('hydration').value);
+    const temperature = parseFloat(document.getElementById('temperature').value);
+    const starterType = document.getElementById('starterType').value;
 
-    // Calculate bulk fermentation time
-    const bulkHours = calculateBulkTime(doughTemp);
+    // Calculate total dough weight
+    const totalDough = doughWeight * loaves;
+
+    // Calculate starter parameters
+    const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
+    const starterRatio = 0.2;
+
+    // Calculate total flour and water
+    const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
+    const totalWater = (totalFlour * hydration/100);
+    const starterAmount = totalFlour * starterRatio;
+
+    // Calculate starter components
+    const starterFlour = starterAmount / (1 + starterHydration);
+    const starterWater = starterAmount - starterFlour;
+
+    // Calculate final ingredients
+    const mainFlour = totalFlour - starterFlour;
+    const mainWater = totalWater - starterWater;
+    const salt = totalFlour * 0.02;
+
+    // Calculate fermentation times
+    const baseTemp = 20;
+    const tempFactor = baseTemp / temperature;
+    const bulkFermentation = Math.round(4 * 60 * tempFactor);
+    const proofTime = Math.round(2 * 60 * tempFactor);
 
     // Generate schedule
-    const now = new Date();
-    const scheduleSteps = [];
+    const schedule = `
+        <h3>Ingredients:</h3>
+        <ul>
+            <li>Main flour: ${Math.round(mainFlour)}g</li>
+            <li>Water: ${Math.round(mainWater)}g</li>
+            <li>Salt: ${Math.round(salt)}g</li>
+            <li>Starter: ${Math.round(starterAmount)}g (${starterType})</li>
+        </ul>
 
-    // Starter feeding (12 hours before)
-    const starterFeedTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Feed Starter",
-        starterFeedTime,
-        `Mix ${starterHydration === 0.5 ? '1:2:2' : '1:1:1'} ratio (${starterHydration * 100}% hydration)`
-    ));
-
-    // Autolyse
-    const autolyseEnd = new Date(now.getTime() + 60 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Autolyse",
-        now,
-        autolyseEnd,
-        `Mix ${scaledRecipe.flour}g flour + ${scaledRecipe.water}g water`
-    ));
-
-    // Mix dough
-    const mixEnd = new Date(autolyseEnd.getTime() + 15 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Mix Dough",
-        autolyseEnd,
-        mixEnd,
-        `Add ${scaledRecipe.starter}g starter + ${scaledRecipe.salt}g salt`
-    ));
-
-    // Bulk fermentation with folds
-    const bulkEnd = new Date(mixEnd.getTime() + bulkHours * 60 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Bulk Fermentation",
-        mixEnd,
-        bulkEnd,
-        `Perform 4 sets of stretch & folds (every 30 minutes)`
-    ));
-
-    // Shape and proof
-    const shapeEnd = new Date(bulkEnd.getTime() + 30 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Shape & Proof",
-        bulkEnd,
-        shapeEnd,
-        "Pre-shape, rest 30min, final shape"
-    ));
-
-    // Cold proof
-    const coldProofEnd = new Date(shapeEnd.getTime() + 12 * 60 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Cold Proof",
-        shapeEnd,
-        coldProofEnd,
-        "Refrigerate at 4°C"
-    ));
-
-    // Bake
-    const bakeEnd = new Date(coldProofEnd.getTime() + 60 * 60 * 1000);
-    scheduleSteps.push(createScheduleStep(
-        "Bake",
-        coldProofEnd,
-        bakeEnd,
-        "250°C with steam for 20min, 230°C for 20min"
-    ));
-
-    // Display results
-    displayResults(scaledRecipe, scheduleSteps);
-}
-
-function calculateBulkTime(tempC) {
-    if (tempC >= 25) return 4;
-    if (tempC >= 22) return 5;
-    if (tempC >= 19) return 6;
-    return 7;
-}
-
-function createScheduleStep(name, start, end, notes = '') {
-    return {
-        name,
-        time: `${formatTime(start)} - ${formatTime(end)}`,
-        duration: `${((end - start)/3600000).toFixed(1)} hours`,
-        notes
-    };
-}
-
-function formatTime(date) {
-    return date.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
-        minute: '2-digit', 
-        hour12: true 
-    });
-}
-
-function displayResults(recipe, schedule) {
-    // Show ingredients
-    let ingredientsHTML = `<h3>🧾 Recipe for ${document.getElementById('loaves').value} Loaf(s)</h3>`;
-    ingredientsHTML += `
-        <p>Flour: ${recipe.flour}g</p>
-        <p>Water: ${recipe.water}g</p>
-        <p>Salt: ${recipe.salt}g</p>
-        <p>Starter: ${recipe.starter}g</p>
-        <p>Total Dough: ${recipe.flour + recipe.water + recipe.salt + recipe.starter}g</p>
+        <h3>Schedule:</h3>
+        <ol>
+            <li>12 hours before: Feed starter</li>
+            <li>Mix all ingredients (autolyse)</li>
+            <li>Bulk fermentation: ${bulkFermentation} minutes</li>
+            <li>Shape dough</li>
+            <li>Final proof: ${proofTime} minutes</li>
+            <li>Bake at 250°C for 30 minutes</li>
+        </ol>
     `;
-    document.getElementById('results').innerHTML = ingredientsHTML;
 
-    // Show schedule
-    let scheduleHTML = '<h3>⏰ Baking Schedule</h3>';
-    schedule.forEach(step => {
-        scheduleHTML += `
-            <div class="schedule-step">
-                <strong>${step.name}</strong><br>
-                <em>${step.time}</em> (${step.duration})<br>
-                ${step.notes}
-            </div>
-        `;
-    });
-    document.getElementById('schedule').innerHTML = scheduleHTML;
+    document.getElementById('results').innerHTML = schedule;
 }
 
-// Hydration slider update
-document.getElementById('hydration').addEventListener('input', function() {
-    document.getElementById('hydrationValue').textContent = `${this.value}%`;
+// PayPal integration
+document.addEventListener('DOMContentLoaded', function() {
+    paypal.Buttons({
+        style: {
+            shape: 'rect',
+            color: 'gold',
+            layout: 'horizontal',
+            label: 'donate'
+        },
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '5.00'
+                    }
+                }]
+            });
+        }
+    }).render('#paypal-button-container');
 });
