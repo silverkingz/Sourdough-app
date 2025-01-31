@@ -1,68 +1,102 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f5e6d3;
+    background-color: #f5f0e6;
 }
 
 .calculator {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3436;
 }
 
-.temperature-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.button-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.results {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #fff8e1;
-    border-radius: 5px;
-}
-
-.hydration-display {
-    margin-top: 5px;
+input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
 }
 
 input[type="range"] {
-    width: 200px;
+    width: 100%;
+    margin-top: 8px;
 }
 
-#paypal-button-container {
+.temp-container {
+    display: flex;
+    gap: 10px;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#generateBtn {
+    background-color: #00b894;
+    color: white;
+}
+
+#generateBtn:hover {
+    background-color: #00a383;
+}
+
+.paypal-button {
+    background-color: #003087;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.paypal-button:hover {
+    background-color: #002366;
+}
+
+.results-section {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #fff9ec;
+    border-radius: 8px;
+}
+
+.schedule-step {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: white;
+    border-left: 4px solid #00b894;
+    border-radius: 4px;
+}
+
+.temperature-badge {
+    background-color: #ffeaa7;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
     margin-left: 10px;
 }
