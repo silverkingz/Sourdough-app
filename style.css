@@ -1,104 +1,74 @@
 body {
-    font-family: 'Arial', sans-serif;
-    max-width: 1000px;
+    font-family: Arial, sans-serif;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background: #f5f3f0;
+    background: #fff8e5;
 }
 
 .container {
     background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-
-.tabs, .subtabs {
-    margin: 20px 0;
-    border-bottom: 2px solid #ddd;
-}
-
-.tablink, .subtablink {
-    background: #f8f8f8;
-    border: none;
-    padding: 12px 20px;
-    margin-right: 5px;
-    cursor: pointer;
-    border-radius: 5px 5px 0 0;
-}
-
-.tablink.active, .subtablink.active {
-    background: #4CAF50;
-    color: white;
-}
-
-.recipe-content {
-    display: none;
-    margin: 20px 0;
     padding: 20px;
-    border: 2px solid #eee;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.recipe-header {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #ddd;
+.input-group {
+    margin-bottom: 20px;
 }
 
-.yield {
-    color: #666;
-    font-style: italic;
+label {
+    display: block;
+    margin: 10px 0;
 }
 
-.step-table {
-    width: 100%;
-    margin: 15px 0;
-    border-collapse: collapse;
+input, select {
+    padding: 5px;
+    margin: 5px 0;
 }
 
-.step-table th {
-    background: #4CAF50;
-    color: white;
-    padding: 12px;
-    text-align: left;
+input[type="number"] {
+    width: 100px;
 }
 
-.step-table td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+input[type="range"] {
+    width: 150px;
 }
 
-.time-input {
-    margin: 25px 0;
-    padding: 20px;
-    background: #f8f8f8;
-    border-radius: 8px;
-}
-
-.time-input input {
-    padding: 8px;
-    margin: 0 10px;
-    width: 120px;
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
 }
 
 button {
+    padding: 10px 20px;
     background: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
 }
 
-button:hover {
-    background: #45a049;
+button[type="submit"] {
+    background: #ffc439;
+    color: black;
 }
 
-#schedule {
-    margin-top: 25px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+button:hover {
+    opacity: 0.9;
+}
+
+#results, #schedule {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.schedule-step {
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 3px solid #4CAF50;
+    background: #f9f9f9;
 }
