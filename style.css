@@ -1,131 +1,149 @@
-body {
-    font-family: 'Arial', sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f5f0e6;
+:root {
+    --primary-color: #4a4a4a;
+    --secondary-color: #6b4e3d;
+    --highlight-color: #8c735b;
+    --background-color: #f5f0eb;
 }
 
-.calculator {
-    background-color: #fff;
-    padding: 30px;
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.calculator-container {
+    background: white;
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.calculator-title {
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--highlight-color);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
 }
 
-label {
+.input-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #2d3436;
 }
 
-input[type="number"], select {
+.input-field {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #e0e0e0;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 1rem;
 }
 
-input[type="range"] {
+.hydration-slider {
     width: 100%;
-    margin-top: 8px;
+    margin-top: 0.5rem;
 }
 
 .temp-container {
     display: flex;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
-.buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-button {
-    padding: 12px 25px;
+.unit-toggle {
+    background: var(--highlight-color);
+    color: white;
     border: none;
+    padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
 }
 
-#generateBtn {
-    background-color: #00b894;
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.generate-btn {
+    background: var(--secondary-color);
     color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-#generateBtn:hover {
-    background-color: #00a383;
-}
-
-.paypal-button {
-    background-color: #FFC439;
+.paypal-btn {
+    background: #FFC439;
     color: #2d3436;
-    border: 1px solid #e0e0e0;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: bold;
+    gap: 0.5rem;
 }
 
-.paypal-button:hover {
-    background-color: #F2BA30;
-}
-
-.results-section {
-    margin-top: 30px;
-    padding: 25px;
-    background-color: #fff9ec;
+/* Results Styling */
+.schedule-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #fffaf5;
     border-radius: 8px;
 }
 
-.schedule-step {
-    margin: 20px 0;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+.schedule-title {
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
 }
 
-.timeline-marker {
-    background: #00b894;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.9em;
+.process-step {
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+    border-left: 3px solid var(--highlight-color);
 }
 
-.process-steps {
-    margin-left: 20px;
-    border-left: 3px solid #eee;
-    padding-left: 20px;
+.step-header {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
 }
 
-.process-steps li {
-    margin: 15px 0;
-    position: relative;
+.ingredient-list {
     list-style: none;
+    padding-left: 0;
 }
 
-.process-steps li::before {
-    content: "▹";
-    position: absolute;
-    left: -20px;
-    color: #00b894;
+.ingredient-item {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f4f0;
+    border-radius: 4px;
 }
 
 .temperature-badge {
-    background-color: #ffeaa7;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.9em;
-    margin-left: 10px;
+    background: var(--highlight-color);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+.proof-notes {
+    background: #f8f4f0;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
 }
