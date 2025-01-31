@@ -1,9 +1,11 @@
 function generateRecipe() {
     // Clear previous results
-    document.getElementById('results').innerHTML = '';
-    document.getElementById('schedule').innerHTML = '';
+    const resultsDiv = document.getElementById('results');
+    const scheduleDiv = document.getElementById('schedule');
+    resultsDiv.innerHTML = '';
+    scheduleDiv.innerHTML = '';
 
-    // Get inputs
+    // Get input values
     const loaves = parseInt(document.getElementById('loaves').value) || 1;
     const doughPerLoaf = parseInt(document.getElementById('doughWeight').value) || 800;
     const hydration = parseInt(document.getElementById('hydration').value) / 100 || 0.7;
@@ -20,13 +22,13 @@ function generateRecipe() {
 
     // Calculate scaled ingredients
     const scaledRecipe = {
-        flour: Math.round((baseRecipe.flour * (doughPerLoaf / 800)) * loaves),
-        salt: Math.round((baseRecipe.salt * (doughPerLoaf / 800)) * loaves),
-        starter: Math.round((baseRecipe.starter * (doughPerLoaf / 800)) * loaves)
+        flour: Math.round(baseRecipe.flour * (doughPerLoaf / 800) * loaves),
+        salt: Math.round(baseRecipe.salt * (doughPerLoaf / 800) * loaves),
+        starter: Math.round(baseRecipe.starter * (doughPerLoaf / 800) * loaves)
     };
     
     // Adjust water for hydration
-    scaledRecipe.water = Math.round((hydration * scaledRecipe.flour));
+    scaledRecipe.water = Math.round(scaledRecipe.flour * hydration);
 
     // Calculate bulk fermentation time
     const bulkHours = calculateBulkTime(doughTemp);
@@ -37,7 +39,7 @@ function generateRecipe() {
 
     // Starter feeding (12 hours before)
     const starterFeedTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Feed Starter",
         starterFeedTime,
         `Mix ${starterHydration === 0.5 ? '1:2:2' : '1:1:1'} ratio (${starterHydration * 100}% hydration)`
@@ -45,7 +47,7 @@ function generateRecipe() {
 
     // Autolyse
     const autolyseEnd = new Date(now.getTime() + 60 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Autolyse",
         now,
         autolyseEnd,
@@ -54,7 +56,7 @@ function generateRecipe() {
 
     // Mix dough
     const mixEnd = new Date(autolyseEnd.getTime() + 15 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Mix Dough",
         autolyseEnd,
         mixEnd,
@@ -63,7 +65,7 @@ function generateRecipe() {
 
     // Bulk fermentation with folds
     const bulkEnd = new Date(mixEnd.getTime() + bulkHours * 60 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Bulk Fermentation",
         mixEnd,
         bulkEnd,
@@ -72,7 +74,7 @@ function generateRecipe() {
 
     // Shape and proof
     const shapeEnd = new Date(bulkEnd.getTime() + 30 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Shape & Proof",
         bulkEnd,
         shapeEnd,
@@ -81,7 +83,7 @@ function generateRecipe() {
 
     // Cold proof
     const coldProofEnd = new Date(shapeEnd.getTime() + 12 * 60 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Cold Proof",
         shapeEnd,
         coldProofEnd,
@@ -90,7 +92,7 @@ function generateRecipe() {
 
     // Bake
     const bakeEnd = new Date(coldProofEnd.getTime() + 60 * 60 * 1000);
-    scheduleSteps.push(createStep(
+    scheduleSteps.push(createScheduleStep(
         "Bake",
         coldProofEnd,
         bakeEnd,
@@ -108,7 +110,7 @@ function calculateBulkTime(tempC) {
     return 7;
 }
 
-function createStep(name, start, end, notes = '') {
+function createScheduleStep(name, start, end, notes = '') {
     return {
         name,
         time: `${formatTime(start)} - ${formatTime(end)}`,
