@@ -43,20 +43,19 @@ input[type="range"] {
 
 button {
     padding: 10px 20px;
-    background: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-button[type="submit"] {
-    background: #ffc439;
-    color: black;
+button:not(.paypal-button) {
+    background: #4CAF50;
 }
 
-button:hover {
-    opacity: 0.9;
+.paypal-button {
+    background: #ffc439;
+    color: black;
 }
 
 #results, #schedule {
