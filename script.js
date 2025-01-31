@@ -1,127 +1,107 @@
 function generateRecipe() {
-    // Trigger Google Ad
-    (adsbygoogle = window.adsbygoogle || []).push({});
-
     // Get inputs
-    const loaves = parseFloat(document.getElementById("loaves").value);
-    const doughPerLoaf = parseFloat(document.getElementById("doughWeight").value);
-    const hydration = parseFloat(document.getElementById("hydration").value) / 100; // 70% → 0.7
-    const starterHydration = parseFloat(document.getElementById("starterHydration").value) / 100; // 50% → 0.5
-    const temperature = parseFloat(document.getElementById("temperature").value);
+    const loaves = parseFloat(document.getElementById("loaves").value) || 1;
+    const doughPerLoaf = parseFloat(document.getElementById("doughWeight").value) || 800;
+    const hydration = parseFloat(document.getElementById("hydration").value) / 100 || 0.7;
+    const starterHydration = parseFloat(document.getElementById("starterHydration").value) / 100 || 1;
+    const temperature = parseFloat(document.getElementById("temperature").value) || 22;
 
     // Constants
-    const SALT_PERCENT = 0.02; // 2% salt
-    const STARTER_PERCENT = 0.2; // 20% starter
+    const SALT_PERCENT = 0.02; 
+    const STARTER_PERCENT = 0.2;
 
     // Calculations
     const totalDough = doughPerLoaf * loaves;
     const totalFlour = totalDough / (1 + hydration + STARTER_PERCENT);
     const totalWater = totalFlour * hydration;
     const starterAmount = totalFlour * STARTER_PERCENT;
-    
-    // Starter composition
     const starterFlour = starterAmount / (1 + starterHydration);
     const starterWater = starterAmount - starterFlour;
-
-    // Final dough components
     const finalFlour = totalFlour - starterFlour;
     const finalWater = totalWater - starterWater;
     const salt = totalFlour * SALT_PERCENT;
 
-    // Baker's percentages
-    const bakersPercent = {
-        hydration: (totalWater / totalFlour * 100).toFixed(1),
-        salt: (SALT_PERCENT * 100).toFixed(1),
-        starter: (STARTER_PERCENT * 100).toFixed(1)
-    };
-
-    // Generate Results
-    const resultsHTML = `
+    // Display Recipe
+    document.getElementById("results").innerHTML = `
         <h3>Recipe for ${loaves} Loaf${loaves > 1 ? 's' : ''}</h3>
         <p>Total Dough: <strong>${totalDough.toFixed(1)}g</strong></p>
-        <p>Final Flour: ${finalFlour.toFixed(1)}g</p>
-        <p>Final Water: ${finalWater.toFixed(1)}g</p>
+        <p>Flour: ${finalFlour.toFixed(1)}g</p>
+        <p>Water: ${finalWater.toFixed(1)}g</p>
         <p>Starter: ${starterFlour.toFixed(1)}g flour + ${starterWater.toFixed(1)}g water</p>
         <p>Salt: ${salt.toFixed(1)}g</p>
-        <p>Hydration: ${bakersPercent.hydration}% | Starter: ${bakersPercent.starter}%</p>
     `;
 
-    // Generate Workflow Schedule
+    // Generate Workflow
     const now = new Date();
     const steps = [];
-    
-    // Starter Feeding (12 hours before autolyse)
+
+    // Starter Feeding (12h before)
     const starterFeedTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-    steps.push({
-        name: "Feed Starter",
-        time: formatTime(starterFeedTime),
-        action: `Mix ${starterFlour.toFixed(1)}g flour + ${starterWater.toFixed(1)}g water`
-    });
+    steps.push(`
+        <div class="step">
+            <strong>Feed Starter</strong><br>
+            ${formatTime(starterFeedTime)}: Mix ${starterFlour.toFixed(1)}g flour + ${starterWater.toFixed(1)}g water
+        </div>
+    `);
 
-    // Autolyse (Now)
-    const autolyseEnd = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour
-    steps.push({
-        name: "Autolyse",
-        time: `${formatTime(now)} - ${formatTime(autolyseEnd)}`,
-        action: "Mix flour + water (no salt/starter)"
-    });
+    // Autolyse (Now + 1h)
+    const autolyseEnd = new Date(now.getTime() + 60 * 60 * 1000);
+    steps.push(`
+        <div class="step">
+            <strong>Autolyse</strong><br>
+            ${formatTime(now)} - ${formatTime(autolyseEnd)}: Mix flour + water (no starter/salt)
+        </div>
+    `);
 
-    // Bulk Fermentation (temperature-adjusted)
+    // Bulk Fermentation
     const bulkHours = calculateBulkTime(temperature);
     const bulkEnd = new Date(autolyseEnd.getTime() + bulkHours * 60 * 60 * 1000);
-    steps.push({
-        name: "Bulk Fermentation",
-        time: `${formatTime(autolyseEnd)} - ${formatTime(bulkEnd)}`,
-        action: `Add starter + salt. Stretch & fold every 30min (≈${bulkHours}hrs)`
-    });
+    steps.push(`
+        <div class="step">
+            <strong>Bulk Fermentation</strong><br>
+            ${formatTime(autolyseEnd)} - ${formatTime(bulkEnd)} (${bulkHours} hours): Add starter + salt. Fold every 30min.
+        </div>
+    `);
 
-    // Shaping & Final Proof
-    const shapingEnd = new Date(bulkEnd.getTime() + 0.5 * 60 * 60 * 1000); // 30min
-    steps.push({
-        name: "Shaping & Proofing",
-        time: `${formatTime(bulkEnd)} - ${formatTime(shapingEnd)}`,
-        action: "Shape dough and proof in banneton"
-    });
+    // Shaping & Proofing
+    const shapingEnd = new Date(bulkEnd.getTime() + 0.5 * 60 * 60 * 1000);
+    steps.push(`
+        <div class="step">
+            <strong>Shaping & Proofing</strong><br>
+            ${formatTime(bulkEnd)} - ${formatTime(shapingEnd)}: Shape dough and proof in banneton.
+        </div>
+    `);
 
     // Baking
-    const bakeEnd = new Date(shapingEnd.getTime() + 1 * 60 * 60 * 1000); // 1 hour
-    steps.push({
-        name: "Baking",
-        time: `${formatTime(shapingEnd)} - ${formatTime(bakeEnd)}`,
-        action: "Preheat Dutch oven to 250°C. Bake 20min lid-on, 20min lid-off"
-    });
+    const bakeEnd = new Date(shapingEnd.getTime() + 1 * 60 * 60 * 1000);
+    steps.push(`
+        <div class="step">
+            <strong>Baking</strong><br>
+            ${formatTime(shapingEnd)} - ${formatTime(bakeEnd)}: Bake at 250°C (lid-on 20min, lid-off 20min).
+        </div>
+    `);
 
-    // Build Workflow HTML
-    let workflowHTML = `<h3>⏰ Schedule (Current Time: ${formatTime(now)})</h3>`;
-    steps.forEach(step => {
-        workflowHTML += `
-            <div class="step">
-                <strong>${step.name}:</strong><br>
-                <em>${step.time}</em><br>
-                ${step.action}
-            </div>
-        `;
-    });
-
-    // Display Results
-    document.getElementById("results").innerHTML = resultsHTML;
-    document.getElementById("workflow").innerHTML = workflowHTML;
+    // Display Workflow
+    document.getElementById("workflow").innerHTML = `
+        <h3>⏰ Schedule (Current Time: ${formatTime(now)})</h3>
+        ${steps.join('')}
+    `;
 }
 
-// Helper Functions
+// Helper: Format time to HH:MM AM/PM
 function formatTime(date) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
+// Helper: Adjust bulk time by temperature
 function calculateBulkTime(temp) {
-    // Adjust bulk fermentation time based on temperature
-    if (temp > 25) return 4;
-    if (temp > 22) return 5;
-    if (temp > 19) return 6;
+    if (temp >= 25) return 4;
+    if (temp >= 22) return 5;
+    if (temp >= 19) return 6;
     return 7;
 }
 
-// Hydration Slider Update
+// Update hydration % display
 document.getElementById("hydration").addEventListener("input", function() {
     document.getElementById("hydrationValue").textContent = `${this.value}%`;
 });
