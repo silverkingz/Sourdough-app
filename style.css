@@ -1,74 +1,8 @@
-body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff8e5;
-}
-
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin: 10px 0;
-}
-
-input, select {
-    padding: 5px;
-    margin: 5px 0;
-}
-
-input[type="number"] {
-    width: 100px;
-}
-
-input[type="range"] {
-    width: 150px;
-}
-
-.buttons {
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-button {
-    padding: 10px 20px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button[type="submit"] {
-    background: #ffc439;
-    color: black;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-#results, #schedule {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.schedule-step {
-    margin: 10px 0;
-    padding: 10px;
-    border-left: 3px solid #4CAF50;
-    background: #f9f9f9;
+/* Previous styles + additions */
+.unit-toggle { margin-bottom: 15px; }
+.unit-toggle label { margin-right: 15px; }
+input[type="datetime-local"] { width: 200px; }
+.tooltip {
+    cursor: help;
+    border-bottom: 1px dotted #666;
 }
