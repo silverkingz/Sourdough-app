@@ -4,105 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sourdough Calculator Pro</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f0e6;
-        }
-
-        .calculator {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        #generateBtn {
-            background-color: #00b894;
-            color: white;
-        }
-
-        #generateBtn:hover {
-            background-color: #00a383;
-        }
-
-        .paypal-button {
-            background-color: #003087;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .paypal-button:hover {
-            background-color: #002366;
-        }
-
-        .results-section {
-            margin-top: 30px;
-            padding: 25px;
-            background-color: #fff9ec;
-            border-radius: 8px;
-        }
-
-        .schedule-step {
-            margin: 15px 0;
-            padding: 15px;
-            background-color: white;
-            border-left: 4px solid #00b894;
-            border-radius: 4px;
-        }
-
-        .temperature-badge {
-            background-color: #ffeaa7;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="calculator">
@@ -125,8 +27,8 @@
 
         <div class="input-group">
             <label>Temperature:</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="number" id="temperature" value="20" style="flex: 1;">
+            <div class="temp-container">
+                <input type="number" id="temperature" value="20">
                 <button onclick="toggleUnit()">Switch °C/°F</button>
             </div>
         </div>
@@ -152,94 +54,6 @@
         <div class="results-section" id="schedule"></div>
     </div>
 
-    <script>
-        let isCelsius = true;
-
-        // Toggle temperature unit
-        function toggleUnit() {
-            isCelsius = !isCelsius;
-            const tempInput = document.getElementById('temperature');
-            tempInput.value = isCelsius ? 
-                Math.round((tempInput.value - 32) * 5/9) :
-                Math.round((tempInput.value * 9/5) + 32);
-        }
-
-        // Hydration display update
-        document.getElementById('hydration').addEventListener('input', (e) => {
-            document.getElementById('hydrationValue').textContent = `${e.target.value}%`;
-        });
-
-        // Main calculation function
-        function generateRecipe() {
-            const loaves = parseInt(document.getElementById('loaves').value);
-            const doughWeight = parseInt(document.getElementById('doughWeight').value);
-            const hydration = parseInt(document.getElementById('hydration').value);
-            const temperature = parseFloat(document.getElementById('temperature').value);
-            const starterType = document.getElementById('starterType').value;
-
-            // Calculations
-            const totalDough = doughWeight * loaves;
-            const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
-            const starterRatio = 0.2;
-            
-            const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
-            const totalWater = totalFlour * (hydration/100);
-            const starterAmount = totalFlour * starterRatio;
-            
-            const starterFlour = starterAmount / (1 + starterHydration);
-            const starterWater = starterAmount - starterFlour;
-            
-            const mainFlour = totalFlour - starterFlour;
-            const mainWater = totalWater - starterWater;
-            const salt = totalFlour * 0.02;
-
-            // Timing calculations
-            const baseTemp = 20;
-            const tempFactor = baseTemp / temperature;
-            const bulkTime = Math.round(4 * 60 * tempFactor);
-            const proofTime = Math.round(2 * 60 * tempFactor);
-
-            // Generate Results
-            const ingredientsHTML = `
-                <h2>Ingredients</h2>
-                <div class="schedule-step">
-                    <p>Main Flour: <strong>${Math.round(mainFlour)}g</strong></p>
-                    <p>Water: <strong>${Math.round(mainWater)}g</strong></p>
-                    <p>Salt: <strong>${Math.round(salt)}g</strong></p>
-                    <p>Starter: <strong>${Math.round(starterAmount)}g</strong> (${starterType})</p>
-                </div>
-            `;
-
-            const scheduleHTML = `
-                <h2>Baking Schedule</h2>
-                <div class="schedule-step">
-                    <h3>Starter Feeding (12 hours before)</h3>
-                    <p>${starterType === 'stiff' ? 
-                        '100g mature starter + 500g flour + 250g water' : 
-                        '100g mature starter + 400g flour + 400g water'}</p>
-                    <span class="temperature-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span>
-                </div>
-
-                <div class="schedule-step">
-                    <h3>Day 1: Preparation</h3>
-                    <p>8:30 AM: Autolyse (mix flour & water)</p>
-                    <p>9:30 AM: Add starter and salt</p>
-                    <p>9:30 AM - 1:30 PM: Bulk fermentation (${bulkTime} minutes)</p>
-                    <p>→ Perform 4 stretch & fold sets every 30 minutes</p>
-                </div>
-
-                <div class="schedule-step">
-                    <h3>Day 2: Baking</h3>
-                    <p>1:30 PM: Divide into ${loaves} loaves</p>
-                    <p>2:00 PM: Final proof (${proofTime} minutes)</p>
-                    <p>6:00 PM: Bake at 250°C/480°F</p>
-                    <p>→ 20 mins covered + 25-30 mins uncovered</p>
-                </div>
-            `;
-
-            document.getElementById('results').innerHTML = ingredientsHTML;
-            document.getElementById('schedule').innerHTML = scheduleHTML;
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
