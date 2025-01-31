@@ -17,18 +17,16 @@ document.getElementById('hydration').addEventListener('input', (e) => {
 });
 
 function calculateBulkTime(temp) {
-    // Q10 temperature coefficient for fermentation (2.5 typical for yeast)
     const baseTemp = 24;
-    const baseTime = 240; // 4 hours at 24°C
+    const baseTime = 240;
     return Math.round(baseTime * Math.pow(2.5, (baseTemp - temp)/10));
 }
 
 function calculateFeedingTime(temp) {
-    // Base feeding time: 12 hours at 22°C for 1:4:4 feeding
     const baseTemp = 22;
-    const baseTime = 720; // 12 hours in minutes
+    const baseTime = 720;
     const adjustedTime = baseTime * Math.pow(2.5, (baseTemp - temp)/10);
-    return Math.max(360, Math.round(adjustedTime)); // Never less than 6 hours
+    return Math.max(360, Math.round(adjustedTime));
 }
 
 function formatDuration(minutes) {
@@ -73,7 +71,6 @@ function generateRecipe() {
                 'Mix 100g mature starter with 500g flour and 250g water (1:5:2.5 ratio)' : 
                 'Mix 100g mature starter with 400g flour and 400g water (1:4:4 ratio)'}</p>
             <p>Fermentation time: <span class="temp-badge">${formatDuration(feedingMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
-            <p>Look for 50-70% rise and bubbly surface</p>
         </div>
 
         <div class="schedule-step">
@@ -91,7 +88,6 @@ function generateRecipe() {
             <p>Total time: <span class="temp-badge">${formatDuration(bulkMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
             <p>1. Mix ingredients and autolyse (30 minutes)</p>
             <p>2. Perform 4 sets of stretch and folds (every 30 minutes)</p>
-            <p>3. Rest until ${Math.round(70 + (temperature/24 * 30))}% volume increase</p>
         </div>
 
         <div class="schedule-step">
@@ -112,6 +108,13 @@ function generateRecipe() {
             <p>2. Bake covered: 20 minutes</p>
             <p>3. Uncover and bake: 20-25 minutes at <span class="temp-badge">230°C/450°F</span></p>
             <p>4. Cool on wire rack for ≥2 hours</p>
+        </div>
+
+        <div class="disclaimer-note">
+            <strong>Please Note:</strong> All temperature and time recommendations are guidelines. 
+            Every starter behaves differently, and results may vary based on your specific 
+            environment and ingredients. Use these recommendations as a starting point 
+            and adjust based on your observations.
         </div>
     `;
 
