@@ -16,6 +16,16 @@ document.getElementById('hydration').addEventListener('input', (e) => {
     document.getElementById('hydrationValue').textContent = e.target.value;
 });
 
+function calculateBulkTime(temperature) {
+    // Base fermentation time at 24°C = 4 hours (240 minutes)
+    const baseTemp = 24;
+    const baseTime = 240;
+    // Calculate temperature difference factor
+    const tempDifference = baseTemp / temperature;
+    // Apply non-linear scaling
+    return Math.round(baseTime * Math.pow(tempDifference, 1.5));
+}
+
 function generateRecipe() {
     const loaves = parseInt(document.getElementById('loaves').value);
     const doughWeight = parseInt(document.getElementById('doughWeight').value);
@@ -39,8 +49,21 @@ function generateRecipe() {
     const mainWater = totalWater - starterWater;
     const salt = totalFlour * 0.02;
 
+    // Timing calculations
+    const bulkMinutes = calculateBulkTime(temperature);
+    const bulkHours = (bulkMinutes/60).toFixed(1);
+    const proofTime = Math.round(bulkMinutes * 0.5);
+
     // Generate Results
     const resultsHTML = `
+        <div class="schedule-step">
+            <h3 class="step-title">Starter Feeding (12 hours before)</h3>
+            <p>${starterType === 'stiff' ? 
+                'Mix 100g mature starter with 500g flour and 250g water (1:5:2.5 ratio)' : 
+                'Mix 100g mature starter with 400g flour and 400g water (1:4:4 ratio)'}</p>
+            <p>Maintain temperature at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+        </div>
+
         <div class="schedule-step">
             <h3 class="step-title">Ingredients</h3>
             <ul class="ingredient-list">
@@ -52,22 +75,21 @@ function generateRecipe() {
         </div>
 
         <div class="schedule-step">
-            <h3 class="step-title">Mixing & Bulk Fermentation</h3>
-            <p>1. Mix ${Math.round(mainFlour)}g flour + ${Math.round(mainWater)}g water</p>
-            <p>2. Rest 30 minutes (autolyse)</p>
-            <p>3. Add starter and salt, mix thoroughly</p>
-            <p>4. Bulk ferment at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span> for 4-5 hours</p>
-            <p>→ Perform 4 sets of stretch and folds every 30 minutes</p>
+            <h3 class="step-title">Bulk Fermentation</h3>
+            <p>Total time: ${bulkHours} hours at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>1. Mix ingredients and autolyse (30 minutes)</p>
+            <p>2. Perform 4 sets of stretch and folds (every 30 minutes)</p>
+            <p>3. Rest remaining time until ${Math.round(70 + (temperature/24 * 30))}% volume increase</p>
         </div>
 
         <div class="schedule-step">
             <h3 class="step-title">Shaping & Proofing</h3>
             <p>1. Divide into ${loaves} pieces (${doughWeight}g each)</p>
-            <p>2. Pre-shape into loose rounds, rest 20 minutes</p>
+            <p>2. Pre-shape into loose rounds (rest 20 minutes)</p>
             <p>3. Final shape into tight batards/boules</p>
             <div class="proof-options">
                 <p><strong>Proofing Options:</strong></p>
-                <p>• Room temp: 1-2 hours until springy</p>
+                <p>• Room temp (${temperature}°${isCelsius ? 'C' : 'F'}): ${proofTime} minutes</p>
                 <p>• Cold proof: 12-16 hours in refrigerator</p>
             </div>
         </div>
