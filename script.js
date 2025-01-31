@@ -68,6 +68,10 @@ function generateRecipe() {
 
     // Get selected recipe
     const recipe = recipes[recipeType];
+    if (!recipe) {
+        alert("Please select a valid recipe.");
+        return;
+    }
 
     // Calculate scaled ingredients
     const totalDough = doughPerLoaf * loaves;
