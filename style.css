@@ -22,9 +22,9 @@ label {
     margin: 10px 0;
 }
 
-input[type="number"], select {
-    width: 120px;
+input, select {
     padding: 5px;
+    margin: 5px 0;
 }
 
 button {
@@ -45,4 +45,12 @@ button:hover {
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.step {
+    margin: 15px 0;
+    padding: 10px;
+    border-left: 3px solid #4CAF50;
+    background: white;
 }
