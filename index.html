@@ -3,8 +3,7 @@
 <head>
     <title>Sourdough Calculator Pro</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google AdSense (replace with your ID) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_ID" crossorigin="anonymous"></script>
+    <!-- Remove AdSense for testing -->
 </head>
 <body>
     <div class="container">
@@ -12,35 +11,21 @@
         
         <!-- Input Section -->
         <div class="input-group">
-            <label>Number of Loaves: 
-                <input type="number" id="loaves" value="1" min="1">
-            </label>
-            
-            <label>Dough Weight per Loaf (g): 
-                <input type="number" id="doughWeight" value="800">
-            </label>
-            
-            <label>Hydration (%): 
-                <input type="range" id="hydration" min="60" max="85" value="70"> 
-                <span id="hydrationValue">70%</span>
-            </label>
-            
+            <label>Number of Loaves: <input type="number" id="loaves" value="1" min="1"></label>
+            <label>Dough per Loaf (g): <input type="number" id="doughWeight" value="800"></label>
+            <label>Hydration (%): <input type="range" id="hydration" min="60" max="85" value="70"> <span id="hydrationValue">70%</span></label>
             <label>Starter Type: 
                 <select id="starterHydration">
                     <option value="50">Stiff (50%)</option>
                     <option value="100" selected>Liquid (100%)</option>
                 </select>
             </label>
-            
-            <label>Ambient Temperature (°C): 
-                <input type="number" id="temperature" value="22">
-            </label>
+            <label>Temperature (°C): <input type="number" id="temperature" value="22"></label>
         </div>
 
-        <!-- Generate Button -->
         <button onclick="generateRecipe()">Generate Recipe & Schedule</button>
 
-        <!-- Results -->
+        <!-- Results Container -->
         <div id="results"></div>
         <div id="workflow"></div>
     </div>
