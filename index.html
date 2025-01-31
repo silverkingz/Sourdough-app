@@ -7,43 +7,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="calculator-container">
-        <h1 class="calculator-title">Sourdough Calculator</h1>
+    <div class="container">
+        <h1 class="main-title">Sourdough Calculator</h1>
         
-        <div class="input-section">
-            <div class="input-group">
-                <label>Number of loaves:</label>
-                <input type="number" class="input-field" id="loaves" min="1" value="1">
-            </div>
-            
-            <div class="input-group">
-                <label>Dough weight per loaf (grams):</label>
-                <input type="number" class="input-field" id="doughWeight" min="300" value="800">
-            </div>
+        <div class="input-group">
+            <label>Number of loaves:</label>
+            <input type="number" id="loaves" min="1" value="1" class="form-input">
+        </div>
 
-            <div class="input-group">
-                <label>Hydration (%): <span id="hydrationValue">70</span>%</label>
-                <input type="range" class="hydration-slider" id="hydration" min="60" max="100" value="70">
-            </div>
+        <div class="input-group">
+            <label>Dough weight per loaf (g):</label>
+            <input type="number" id="doughWeight" min="300" value="800" class="form-input">
+        </div>
 
-            <div class="input-group">
-                <label>Temperature:</label>
-                <div class="temp-container">
-                    <input type="number" class="input-field" id="temperature" value="20">
-                    <button class="unit-toggle" onclick="toggleUnit()">°C/°F</button>
-                </div>
-            </div>
+        <div class="input-group">
+            <label>Hydration (%): <span id="hydrationValue">70</span>%</label>
+            <input type="range" id="hydration" min="60" max="100" value="70" class="hydration-slider">
+        </div>
 
-            <div class="input-group">
-                <label>Starter type:</label>
-                <select class="starter-select" id="starterType">
-                    <option value="stiff">Stiff (50% hydration)</option>
-                    <option value="wet">Wet (100% hydration)</option>
-                </select>
+        <div class="input-group">
+            <label>Temperature:</label>
+            <div class="temp-container">
+                <input type="number" id="temperature" value="20" class="form-input">
+                <button class="unit-btn" onclick="toggleUnit()">°C/°F</button>
             </div>
         </div>
 
-        <div class="button-group">
+        <div class="input-group">
+            <label>Starter type:</label>
+            <select id="starterType" class="form-select">
+                <option value="stiff">Stiff (50% hydration)</option>
+                <option value="wet">Wet (100% hydration)</option>
+            </select>
+        </div>
+
+        <div class="btn-container">
             <button class="generate-btn" onclick="generateRecipe()">Generate Recipe</button>
             <form action="https://www.paypal.com/donate" method="post" target="_blank">
                 <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL">
@@ -52,7 +50,7 @@
             </form>
         </div>
 
-        <div id="resultsSection"></div>
+        <div id="results" class="results-container"></div>
     </div>
 
     <script src="script.js"></script>
