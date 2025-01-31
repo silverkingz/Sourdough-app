@@ -80,7 +80,10 @@ function generateRecipe() {
 
     // Get selected recipe
     const recipe = recipes[recipeType];
-    if (!recipe) return;
+    if (!recipe) {
+        alert("Please select a valid recipe.");
+        return;
+    }
 
     // Calculate total dough weight
     const totalDough = doughPerLoaf * loaves;
