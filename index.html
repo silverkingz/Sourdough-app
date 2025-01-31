@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sourdough Calculator Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google AdSense (Replace with your ID) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_ID" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🍞 Sourdough Calculator</h1>
+        
+        <!-- Input Section -->
+        <div class="input-group">
+            <label>Number of Loaves: <input type="number" id="loaves" value="1" min="1"></label>
+            <label>Total Flour per Loaf (g): <input type="number" id="flour" value="500"></label>
+            <label>Hydration (%): <input type="range" id="hydration" min="50" max="100" value="70"> <span id="hydrationValue">70%</span></label>
+        </div>
+
+        <!-- Starter Settings Tab -->
+        <div class="tab">
+            <button class="tablink" onclick="openTab(event, 'starter')">Starter Settings</button>
+            <button class="tablink" onclick="openTab(event, 'bakers')">Baker's %</button>
+        </div>
+
+        <!-- Starter Tab Content -->
+        <div id="starter" class="tabcontent">
+            <label>Starter Hydration (%): <input type="number" id="starterHydration" value="100"></label>
+            <label>Starter in Recipe (%): <input type="number" id="starterPercent" value="20"></label>
+        </div>
+
+        <!-- Baker's % Tab Content -->
+        <div id="bakers" class="tabcontent">
+            <div id="bakersPercentages"></div>
+        </div>
+
+        <!-- Calculate Button -->
+        <button onclick="calculateRecipe()">Generate Workflow</button>
+
+        <!-- Results -->
+        <div id="results"></div>
+        <div id="workflow"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

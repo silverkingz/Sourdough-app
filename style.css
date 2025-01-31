@@ -1,0 +1,9 @@
+body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #fff8e5; }
+.container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.input-group { margin-bottom: 20px; }
+input[type="number"] { width: 80px; }
+.tab button { padding: 10px; background: #f1f1f1; border: none; cursor: pointer; }
+.tab button.active { background: #ddd; }
+.tabcontent { display: none; padding: 10px; border: 1px solid #ddd; }
+#results { margin-top: 20px; }
+#workflow { margin-top: 20px; }
