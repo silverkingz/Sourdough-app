@@ -43,6 +43,10 @@ const breadRecipes = {
 
 let isCelsius = true;
 
+function convertToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5/9;
+}
+
 function toggleUnit() {
     const tempInput = document.getElementById('temperature');
     const currentTemp = parseFloat(tempInput.value);
@@ -53,6 +57,11 @@ function toggleUnit() {
         tempInput.value = Math.round((currentTemp - 32) * 5/9);
     }
     isCelsius = !isCelsius;
+    
+    // Regenerate recipe if results exist
+    if(document.getElementById('results').innerHTML) {
+        generateRecipe();
+    }
 }
 
 document.getElementById('hydration').addEventListener('input', (e) => {
@@ -90,8 +99,13 @@ function generateRecipe() {
     const loaves = parseInt(document.getElementById('loaves').value);
     const doughWeight = parseInt(document.getElementById('doughWeight').value);
     const hydration = parseInt(document.getElementById('hydration').value);
-    const temperature = parseFloat(document.getElementById('temperature').value);
+    const tempInput = parseFloat(document.getElementById('temperature').value);
     const starterType = document.getElementById('starterType').value;
+
+    // Convert temperature to Celsius for calculations
+    const tempC = isCelsius ? tempInput : convertToCelsius(tempInput);
+    const displayTemp = tempInput;
+    const tempUnit = isCelsius ? 'C' : 'F';
 
     const totalDough = doughWeight * loaves;
     const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
@@ -108,8 +122,8 @@ function generateRecipe() {
     const mainWater = totalWater - starterWater;
     const salt = totalFlour * 0.02;
 
-    const bulkMinutes = calculateBulkTime(temperature);
-    const feedingMinutes = calculateFeedingTime(temperature);
+    const bulkMinutes = calculateBulkTime(tempC);
+    const feedingMinutes = calculateFeedingTime(tempC);
     const proofMinutes = Math.round(bulkMinutes * 0.5);
     const extras = calculateExtras(totalFlour, breadType);
 
@@ -119,7 +133,7 @@ function generateRecipe() {
             <p>${starterType === 'stiff' ? 
                 'Mix 100g mature starter with 500g flour and 250g water (1:5:2.5 ratio)' : 
                 'Mix 100g mature starter with 400g flour and 400g water (1:4:4 ratio)'}</p>
-            <p>Ferment for <span class="temp-badge">${formatDuration(feedingMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>Ferment for <span class="temp-badge">${formatDuration(feedingMinutes)}</span> at <span class="temp-badge">${displayTemp}°${tempUnit}</span></p>
         </div>
 
         <div class="schedule-step">
@@ -147,7 +161,7 @@ function generateRecipe() {
 
         <div class="schedule-step">
             <h3 class="step-title">Bulk Fermentation</h3>
-            <p>Total time: <span class="temp-badge">${formatDuration(bulkMinutes)}</span> at <span class="temp-badge">${temperature}°${isCelsius ? 'C' : 'F'}</span></p>
+            <p>Total time: <span class="temp-badge">${formatDuration(bulkMinutes)}</span> at <span class="temp-badge">${displayTemp}°${tempUnit}</span></p>
             <ul class="ingredient-list">
                 <li class="ingredient-item">Mix ingredients and autolyse (30 minutes)</li>
                 <li class="ingredient-item">Perform 4 sets of stretch and folds (every 30 minutes)</li>
@@ -164,7 +178,7 @@ function generateRecipe() {
             </ul>
             <div class="proof-options">
                 <p><strong>Proofing Options:</strong></p>
-                <p>• Room temp (${temperature}°${isCelsius ? 'C' : 'F'}): ${formatDuration(proofMinutes)}</p>
+                <p>• Room temp (${displayTemp}°${tempUnit}): ${formatDuration(proofMinutes)}</p>
                 <p>• Cold proof: 12-16 hours refrigerated</p>
             </div>
         </div>
