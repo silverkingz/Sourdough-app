@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="calculator">
-        <h1>🥖 Sourdough Calculator v2.2</h1>
+    <div class="container">
+        <h1 class="main-title">🥖 Sourdough Calculator v2.2</h1>
         
         <div class="input-group">
-            <label for="breadType">Bread Type:</label>
-            <select id="breadType">
+            <label>Bread Type:</label>
+            <select id="breadType" class="form-select">
                 <option value="white">Classic White</option>
                 <option value="oat">Honey Oat</option>
                 <option value="multigrain">Multigrain</option>
@@ -21,39 +21,41 @@
         </div>
 
         <div class="input-group">
-            <label for="loaves">Number of loaves:</label>
-            <input type="number" id="loaves" min="1" value="1">
+            <label>Number of loaves:</label>
+            <input type="number" id="loaves" min="1" value="1" class="form-input">
         </div>
 
         <div class="input-group">
-            <label for="doughWeight">Dough weight per loaf (g):</label>
-            <input type="number" id="doughWeight" min="300" value="800">
+            <label>Dough weight per loaf (grams):</label>
+            <input type="number" id="doughWeight" min="300" value="800" class="form-input">
         </div>
 
         <div class="input-group">
-            <label>Hydration (%): <span id="hydrationValue">70</span></label>
-            <input type="range" id="hydration" min="60" max="100" value="70">
+            <label>Hydration (%): <span id="hydrationValue">70</span>%</label>
+            <input type="range" id="hydration" min="60" max="100" value="70" class="hydration-slider">
         </div>
 
         <div class="input-group">
             <label>Temperature:</label>
-            <div class="temp-control">
-                <input type="number" id="temperature" value="22">
-                <button onclick="toggleUnit()">°C/°F</button>
+            <div class="temp-container">
+                <input type="number" id="temperature" value="20" class="form-input">
+                <button class="unit-btn" onclick="toggleUnit()">°C/°F</button>
             </div>
         </div>
 
         <div class="input-group">
             <label>Starter type:</label>
-            <select id="starterType">
+            <select id="starterType" class="form-select">
                 <option value="stiff">Stiff (50% hydration)</option>
-                <option value="liquid">Liquid (100% hydration)</option>
+                <option value="wet">Wet (100% hydration)</option>
             </select>
         </div>
 
-        <button class="generate-btn" onclick="generateRecipe()">Generate Recipe</button>
+        <div class="btn-container">
+            <button class="generate-btn" onclick="generateRecipe()">Generate Recipe</button>
+        </div>
 
-        <div id="results" class="results"></div>
+        <div id="results" class="results-container"></div>
     </div>
 
     <script src="script.js"></script>
