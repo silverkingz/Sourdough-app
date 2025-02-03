@@ -113,19 +113,23 @@ function generateRecipe() {
     const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
     const totalWater = totalFlour * (hydration/100);
     const starterAmount = totalFlour * starterRatio;
-    
-    // Calculate starter feeding based on required starterAmount
+
+    // Calculate starter feeding amounts
     let feedingText;
     if(starterType === 'stiff') {
-        const mature = Math.round(starterAmount / 8.5); // 1:5:2.5 ratio
-        const flour = Math.round((starterAmount * 5) / 8.5);
-        const water = Math.round((starterAmount * 2.5) / 8.5);
-        feedingText = `Mix ${mature}g mature starter with ${flour}g flour and ${water}g water (1:5:2.5 ratio)`;
+        // Stiff starter ratio: 1:5:2.5 (mature:flour:water)
+        const totalParts = 1 + 5 + 2.5;
+        const matureStarter = Math.round(starterAmount / totalParts);
+        const starterFlour = Math.round(matureStarter * 5);
+        const starterWater = Math.round(matureStarter * 2.5);
+        feedingText = `Mix ${matureStarter}g mature starter with ${starterFlour}g flour and ${starterWater}g water`;
     } else {
-        const mature = Math.round(starterAmount / 9); // 1:4:4 ratio
-        const flour = Math.round((starterAmount * 4) / 9);
-        const water = Math.round((starterAmount * 4) / 9);
-        feedingText = `Mix ${mature}g mature starter with ${flour}g flour and ${water}g water (1:4:4 ratio)`;
+        // Wet starter ratio: 1:4:4 (mature:flour:water)
+        const totalParts = 1 + 4 + 4;
+        const matureStarter = Math.round(starterAmount / totalParts);
+        const starterFlour = Math.round(matureStarter * 4);
+        const starterWater = Math.round(matureStarter * 4);
+        feedingText = `Mix ${matureStarter}g mature starter with ${starterFlour}g flour and ${starterWater}g water`;
     }
 
     const mainFlour = totalFlour - (starterAmount / (1 + starterHydration));
