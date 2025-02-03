@@ -58,7 +58,6 @@ function toggleUnit() {
     }
     isCelsius = !isCelsius;
     
-    // Regenerate recipe if results exist
     if(document.getElementById('results').innerHTML) {
         generateRecipe();
     }
@@ -115,11 +114,22 @@ function generateRecipe() {
     const totalWater = totalFlour * (hydration/100);
     const starterAmount = totalFlour * starterRatio;
     
-    const starterFlour = starterAmount / (1 + starterHydration);
-    const starterWater = starterAmount - starterFlour;
-    
-    const mainFlour = totalFlour - starterFlour;
-    const mainWater = totalWater - starterWater;
+    // Calculate starter feeding based on required starterAmount
+    let feedingText;
+    if(starterType === 'stiff') {
+        const mature = Math.round(starterAmount / 8.5); // 1:5:2.5 ratio
+        const flour = Math.round((starterAmount * 5) / 8.5);
+        const water = Math.round((starterAmount * 2.5) / 8.5);
+        feedingText = `Mix ${mature}g mature starter with ${flour}g flour and ${water}g water (1:5:2.5 ratio)`;
+    } else {
+        const mature = Math.round(starterAmount / 9); // 1:4:4 ratio
+        const flour = Math.round((starterAmount * 4) / 9);
+        const water = Math.round((starterAmount * 4) / 9);
+        feedingText = `Mix ${mature}g mature starter with ${flour}g flour and ${water}g water (1:4:4 ratio)`;
+    }
+
+    const mainFlour = totalFlour - (starterAmount / (1 + starterHydration));
+    const mainWater = totalWater - (starterAmount - (starterAmount / (1 + starterHydration)));
     const salt = totalFlour * 0.02;
 
     const bulkMinutes = calculateBulkTime(tempC);
@@ -130,9 +140,7 @@ function generateRecipe() {
     const resultsHTML = `
         <div class="schedule-step">
             <h3 class="step-title">Starter Preparation</h3>
-            <p>${starterType === 'stiff' ? 
-                'Mix 100g mature starter with 500g flour and 250g water (1:5:2.5 ratio)' : 
-                'Mix 100g mature starter with 400g flour and 400g water (1:4:4 ratio)'}</p>
+            <p>${feedingText}</p>
             <p>Ferment for <span class="temp-badge">${formatDuration(feedingMinutes)}</span> at <span class="temp-badge">${displayTemp}°${tempUnit}</span></p>
         </div>
 
