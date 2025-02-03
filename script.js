@@ -1,51 +1,13 @@
 const breadRecipes = {
     white: {
         extraIngredients: [],
-        instructions: [],
         method: [
-            {
-                title: "Starter Preparation",
-                steps: [
-                    "8-12 hours before mixing: Feed starter using 1:5:2.5 ratio (starter:flour:water)",
-                    "Maintain at 22-24°C for optimal activity",
-                    "Starter should peak 1 hour before mixing"
-                ]
-            },
-            {
-                title: "Autolyse Phase",
-                steps: [
-                    "Mix ${mainFlour}g flour with ${autolyseWater}g water (${hydration}% hydration)",
-                    "Rest for 45-60 minutes at ${temperature}°C",
-                    "Develop gluten structure before adding salt"
-                ]
-            },
-            {
-                title: "Mixing & Bulk Fermentation",
-                steps: [
-                    "Add ${salt}g salt and ${starterAmount}g starter to autolysed dough",
-                    "Mix until full gluten development (windowpane test)",
-                    "Bulk ferment for ${bulkTime} at ${temperature}°C",
-                    "Perform stretch & folds every 30 minutes for first 2 hours"
-                ]
-            },
-            {
-                title: "Shaping & Final Proof",
-                steps: [
-                    "Preshape dough and rest 15 minutes",
-                    "Final shape and place in banneton",
-                    "Proof at ${temperature}°C for ${proofTime}",
-                    "Check readiness using poke test"
-                ]
-            },
-            {
-                title: "Baking",
-                steps: [
-                    "Preheat Dutch oven to 250°C for 45 minutes",
-                    "Bake covered for 20 minutes",
-                    "Reduce heat to 230°C and bake uncovered for 25 minutes",
-                    "Cool on wire rack for 2+ hours"
-                ]
-            }
+            "Feed starter 8-12 hours before mixing",
+            "Mix flour and water (autolyse 1 hour)",
+            "Add salt and starter, mix thoroughly",
+            "Bulk ferment 4-6 hours with stretch & folds",
+            "Shape and proof 1-2 hours",
+            "Bake at 230°C (450°F) for 30 mins covered, 20 mins uncovered"
         ]
     },
     oat: {
@@ -54,203 +16,140 @@ const breadRecipes = {
             { name: "Honey", percentage: 5 },
             { name: "Oat flour", percentage: 10 }
         ],
-        instructions: [
-            "Toast oats at 180°C for 5 minutes before mixing",
-            "Add honey during autolyse",
-            "Use oat flour for dusting"
-        ],
         method: [
-            {
-                title: "Oat Preparation",
-                steps: [
-                    "Toast ${oatWeight}g oats at 180°C for 8 minutes",
-                    "Soak toasted oats in 50g warm water for 30 minutes",
-                    "Mix honey with reserved water for autolyse"
-                ]
-            },
-            {
-                title: "Enhanced Autolyse",
-                steps: [
-                    "Combine ${mainFlour}g flour, ${oatFlour}g oat flour, and ${autolyseWater}g water",
-                    "Add honey mixture and soaked oats",
-                    "Rest 60 minutes at ${temperature}°C"
-                ]
-            }
+            "Toast oats at 180°C for 5 minutes",
+            "Mix oats with warm water (soak 30 mins)",
+            "Add honey during autolyse",
+            "Bulk ferment 5-7 hours",
+            "Shape with oat flour coating",
+            "Bake at 220°C (425°F) 35 mins covered"
         ]
     },
     multigrain: {
         extraIngredients: [
             { name: "Mixed seeds", percentage: 10 },
-            { name: "Whole wheat flour", percentage: 20 },
-            { name: "Malted grains", percentage: 5 }
+            { name: "Whole wheat flour", percentage: 20 }
         ],
         method: [
-            {
-                title: "Seed Preparation",
-                steps: [
-                    "Soak ${seedWeight}g mixed seeds in 100g warm water for 1 hour",
-                    "Drain and reserve soaking water for autolyse"
-                ]
-            }
+            "Soak seeds overnight",
+            "Mix with whole wheat flour",
+            "Extended autolyse 90 mins",
+            "Bulk ferment 6-8 hours",
+            "Bake at 225°C (435°F) 40 mins"
         ]
     },
     cheddar: {
         extraIngredients: [
             { name: "Cheddar cheese", percentage: 20 },
-            { name: "Jalapeños", percentage: 5 },
-            { name: "Smoked paprika", percentage: 1 }
+            { name: "Jalapeños", percentage: 5 }
         ],
         method: [
-            {
-                title: "Cheese Preparation",
-                steps: [
-                    "Cube ${cheeseWeight}g cheddar into 1cm pieces",
-                    "Pat dry with paper towels to remove excess oil",
-                    "Toss cheese with ${paprikaWeight}g smoked paprika"
-                ]
-            }
+            "Cube cheese into 1cm pieces",
+            "Mix in cheese and jalapeños during folding",
+            "Cold proof overnight after shaping",
+            "Bake at 240°C (465°F) 30 mins covered"
         ]
     }
 };
 
 let isCelsius = true;
 
-// Core Baker's Math Calculations
-function calculateIngredients(totalDough, hydration, starterType) {
-    const SALT_PERCENTAGE = 0.02;
-    const STARTER_RATIO = 0.2;
-    
-    const totalFlour = totalDough / (1 + (hydration/100) + SALT_PERCENTAGE + STARTER_RATIO);
-    const totalWater = (totalFlour * (hydration/100)).toFixed(1);
-    const salt = (totalFlour * SALT_PERCENTAGE).toFixed(1);
-    const starterAmount = (totalFlour * STARTER_RATIO).toFixed(1);
-    
-    return { 
-        totalFlour: parseFloat(totalFlour),
-        totalWater: parseFloat(totalWater),
-        salt: parseFloat(salt),
-        starterAmount: parseFloat(starterAmount)
-    };
-}
-
-function generateRecipe() {
-    // Input Values
-    const breadType = document.getElementById('breadType').value;
+function calculateRecipe() {
     const loaves = parseInt(document.getElementById('loaves').value) || 1;
     const doughWeight = parseInt(document.getElementById('doughWeight').value) || 800;
-    const hydration = parseInt(document.getElementById('hydration').value) || 70;
-    const temp = parseFloat(document.getElementById('temperature').value) || 22;
+    const hydration = parseInt(document.getElementById('hydration').value);
+    const temp = parseFloat(document.getElementById('temperature').value);
+    const breadType = document.getElementById('breadType').value;
     const starterType = document.getElementById('starterType').value;
 
-    // Calculations
+    // Baker's math calculations
     const totalDough = doughWeight * loaves;
-    const ingredients = calculateIngredients(totalDough, hydration, starterType);
-    const autolyseWater = ingredients.totalWater * 0.9;
-    const mixWater = ingredients.totalWater * 0.1;
+    const saltPercentage = 0.02;
+    const starterPercentage = 0.2;
+    
+    const totalFlour = totalDough / (1 + (hydration/100) + saltPercentage + starterPercentage);
+    const water = totalFlour * (hydration/100);
+    const salt = totalFlour * saltPercentage;
+    const starter = totalFlour * starterPercentage;
 
-    // Timing Calculations
+    // Starter feeding calculation
+    const starterFlour = starterType === 'stiff' ? starter * 0.666 : starter * 0.5;
+    const starterWater = starterType === 'stiff' ? starter * 0.333 : starter * 0.5;
+
+    // Temperature calculations
     const bulkTime = calculateBulkTime(temp);
-    const proofTime = calculateProofTime(temp);
-    const feedingTime = calculateFeedingTime(temp);
+    const proofTime = Math.round(bulkTime * 0.75);
 
-    // Generate Method Steps
-    const methodHTML = breadRecipes[breadType].method.map(section => `
-        <div class="method-step">
-            <h3>${section.title}</h3>
-            ${section.steps.map(step => `
-                <p>${replacePlaceholders(step, {
-                    ...ingredients,
-                    autolyseWater: Math.round(autolyseWater),
-                    mixWater: Math.round(mixWater),
-                    hydration: hydration,
-                    temperature: isCelsius ? temp : convertToCelsius(temp),
-                    bulkTime: formatDuration(bulkTime),
-                    proofTime: formatDuration(proofTime),
-                    feedingTime: formatDuration(feedingTime),
-                    oatWeight: Math.round(ingredients.totalFlour * 0.15),
-                    seedWeight: Math.round(ingredients.totalFlour * 0.10),
-                    cheeseWeight: Math.round(ingredients.totalFlour * 0.20),
-                    paprikaWeight: Math.round(ingredients.totalFlour * 0.01)
-                })}</p>
+    // Build results
+    const resultsHTML = `
+        <h3>Ingredients</h3>
+        <ul class="ingredient-list">
+            <li class="ingredient-item">
+                <span>Total Flour:</span>
+                <span>${Math.round(totalFlour)}g</span>
+            </li>
+            <li class="ingredient-item">
+                <span>Water:</span>
+                <span>${Math.round(water)}g</span>
+            </li>
+            ${breadRecipes[breadType].extraIngredients.map(ing => `
+                <li class="ingredient-item">
+                    <span>${ing.name}:</span>
+                    <span>${Math.round(totalFlour * (ing.percentage/100))}g</span>
+                </li>
             `).join('')}
-        </div>
-    `).join('');
+            <li class="ingredient-item">
+                <span>Salt:</span>
+                <span>${Math.round(salt)}g</span>
+            </li>
+            <li class="ingredient-item">
+                <span>Starter (${starterType}):</span>
+                <span>${Math.round(starter)}g</span>
+            </li>
+        </ul>
 
-    // Display Results
-    document.getElementById('results').innerHTML = `
-        <div class="ingredient-grid">
-            <div class="ingredient-card">
-                <h3>📝 Ingredients</h3>
-                <p>Main Flour: ${Math.round(ingredients.totalFlour)}g</p>
-                <p>Water: ${Math.round(ingredients.totalWater)}g</p>
-                <p>Salt: ${Math.round(ingredients.salt)}g</p>
-                <p>Starter: ${Math.round(ingredients.starterAmount)}g</p>
-                ${breadRecipes[breadType].extraIngredients.map(ing => `
-                    <p>${ing.name}: ${Math.round(ingredients.totalFlour * (ing.percentage/100))}g</p>
-                `).join('')}
+        <h3>Method</h3>
+        ${breadRecipes[breadType].method.map((step, index) => `
+            <div class="method-step">
+                <strong>Step ${index + 1}:</strong> ${step}
             </div>
-            <div class="timing-card">
-                <h3>⏰ Schedule</h3>
-                <p class="timing-badge">Bulk Fermentation: ${formatDuration(bulkTime)}</p>
-                <p class="timing-badge">Final Proof: ${formatDuration(proofTime)}</p>
-                <p class="timing-badge">Starter Feeding: ${formatDuration(feedingTime)}</p>
-            </div>
-        </div>
-        
-        <h2>📖 Baking Method</h2>
-        ${methodHTML}
-        
-        <div class="special-note">
-            Note: Times based on ${temp}°${isCelsius ? 'C' : 'F'} environment temperature.
-            Adjust fermentation times if temperature changes significantly.
+        `).join('')}
+
+        <div class="method-step">
+            <strong>Timings:</strong><br>
+            • Bulk Fermentation: ${Math.floor(bulkTime/60)}h ${bulkTime%60}m<br>
+            • Final Proof: ${Math.floor(proofTime/60)}h ${proofTime%60}m<br>
+            • Environment: ${temp}°${isCelsius ? 'C' : 'F'}
         </div>
     `;
-}
 
-// Helper Functions
-function replacePlaceholders(text, values) {
-    return Object.entries(values).reduce((str, [key, value]) => 
-        str.replace(new RegExp(`\\\${${key}}`, 'g'), Math.round(value)), text);
+    document.getElementById('results').innerHTML = resultsHTML;
 }
 
 function calculateBulkTime(temp) {
-    const baseTemp = 24;
-    return Math.round(240 * Math.pow(2.5, (baseTemp - temp)/10));
+    const baseTemp = 24; // Ideal temperature
+    const timeAtBase = 300; // 5 hours in minutes
+    const tempDifference = baseTemp - (isCelsius ? temp : (temp - 32) * 5/9);
+    return Math.round(timeAtBase * Math.pow(1.8, tempDifference/5));
 }
 
-function calculateProofTime(temp) {
-    return Math.round(calculateBulkTime(temp) * 0.6);
-}
-
-function calculateFeedingTime(temp) {
-    return Math.max(360, Math.round(720 * Math.pow(2.5, (22 - temp)/10)));
-}
-
-function formatDuration(minutes) {
-    const hours = Math.floor(minutes/60);
-    const mins = minutes % 60;
-    return `${hours}h${mins.toString().padStart(2, '0')}m`;
-}
-
-// Temperature Conversion
 function toggleUnit() {
     const tempInput = document.getElementById('temperature');
     const currentTemp = parseFloat(tempInput.value);
     
-    tempInput.value = isCelsius ? 
-        Math.round(currentTemp * 9/5 + 32) : 
-        Math.round((currentTemp - 32) * 5/9);
-    
+    if(isCelsius) {
+        tempInput.value = Math.round(currentTemp * 9/5 + 32);
+    } else {
+        tempInput.value = Math.round((currentTemp - 32) * 5/9);
+    }
     isCelsius = !isCelsius;
-    if(document.getElementById('results').innerHTML) generateRecipe();
+    calculateRecipe();
 }
 
-// Event Listeners
+// Event listeners
 document.getElementById('hydration').addEventListener('input', function(e) {
     document.getElementById('hydrationValue').textContent = e.target.value;
 });
 
-// Initialization
-document.addEventListener('DOMContentLoaded', function() {
-    generateRecipe();
-});
+// Initialize
+calculateRecipe();
