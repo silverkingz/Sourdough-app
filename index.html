@@ -3,60 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sourdough Calculator v2.2</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Artisan Sourdough Calculator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="main-title">🥖 Sourdough Calculator v2.2</h1>
+    <main class="container">
+        <h1 class="main-title">🥖 Artisan Sourdough Calculator v2.4</h1>
         
-        <div class="input-group">
-            <label>Bread Type:</label>
-            <select id="breadType" class="form-select">
-                <option value="white">Classic White</option>
-                <option value="oat">Oat</option>
-                <option value="multigrain">Multigrain</option>
-                <option value="cheddar">Cheddar Jalapeño</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Number of loaves:</label>
-            <input type="number" id="loaves" min="1" value="1" class="form-input">
-        </div>
-
-        <div class="input-group">
-            <label>Dough weight per loaf (grams):</label>
-            <input type="number" id="doughWeight" min="300" value="800" class="form-input">
-        </div>
-
-        <div class="input-group">
-            <label>Hydration (%): <span id="hydrationValue">70</span>%</label>
-            <input type="range" id="hydration" min="60" max="100" value="70" class="hydration-slider">
-        </div>
-
-        <div class="input-group">
-            <label>Temperature:</label>
-            <div class="temp-container">
-                <input type="number" id="temperature" value="20" class="form-input">
-                <button class="unit-btn" onclick="toggleUnit()">°C/°F</button>
+        <form id="calculatorForm" class="calculator-form">
+            <div class="input-group">
+                <label for="breadType">Bread Type:</label>
+                <select id="breadType" class="form-select">
+                    <option value="white">Classic White</option>
+                    <option value="oat">Honey Oat</option>
+                    <option value="multigrain">Multigrain</option>
+                    <option value="cheddar">Cheddar Jalapeño</option>
+                </select>
             </div>
-        </div>
 
-        <div class="input-group">
-            <label>Starter type:</label>
-            <select id="starterType" class="form-select">
-                <option value="stiff">Stiff (50% hydration)</option>
-                <option value="wet">Wet (100% hydration)</option>
-            </select>
-        </div>
+            <div class="input-group">
+                <label for="loaves">Number of Loaves:</label>
+                <input type="number" id="loaves" class="form-input" min="1" value="1">
+            </div>
 
-        <div class="btn-container">
-            <button class="generate-btn" onclick="generateRecipe()">Generate Recipe</button>
-        </div>
+            <div class="input-group">
+                <label for="doughWeight">Total Dough Weight per Loaf (g):</label>
+                <input type="number" id="doughWeight" class="form-input" min="300" value="800">
+            </div>
 
-        <div id="results" class="results-container"></div>
-    </div>
+            <div class="input-group">
+                <label>Hydration (%): <span id="hydrationValue">70</span>%</label>
+                <input type="range" id="hydration" class="hydration-slider" min="60" max="100" value="70">
+            </div>
+
+            <div class="input-group">
+                <label>Environment Temperature:</label>
+                <div class="temp-container">
+                    <input type="number" id="temperature" class="form-input" value="22">
+                    <button type="button" class="unit-btn" onclick="toggleUnit()">°C/°F</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="starterType">Starter Type:</label>
+                <select id="starterType" class="form-select">
+                    <option value="stiff">Stiff (50% hydration)</option>
+                    <option value="liquid">Liquid (100% hydration)</option>
+                </select>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="generate-btn" onclick="generateRecipe()">Generate Full Recipe</button>
+            </div>
+        </form>
+
+        <section id="results" class="results-container"></section>
+    </main>
 
     <script src="script.js"></script>
 </body>
