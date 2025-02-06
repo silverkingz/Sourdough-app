@@ -43,9 +43,9 @@ const breadRecipes = {
 
 let isCelsius = true;
 
-function convertToCelsius(fahrenheit) {
-    return (fahrenheit - 32) * 5/9;
-}
+document.getElementById('hydration').addEventListener('input', (e) => {
+    document.getElementById('hydrationValue').textContent = e.target.value;
+});
 
 function toggleUnit() {
     const tempInput = document.getElementById('temperature');
@@ -63,9 +63,9 @@ function toggleUnit() {
     }
 }
 
-document.getElementById('hydration').addEventListener('input', (e) => {
-    document.getElementById('hydrationValue').textContent = e.target.value;
-});
+function convertToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5/9;
+}
 
 function calculateBulkTime(temp) {
     const baseTemp = 24;
@@ -110,21 +110,23 @@ function generateRecipe() {
     const starterHydration = starterType === 'stiff' ? 0.5 : 1.0;
     const starterRatio = 0.2;
     
-    const totalFlour = totalDough / (1 + hydration/100 + starterRatio);
+    // Calculate sum of extra ingredient percentages
+    const sumExtras = breadRecipes[breadType].extraIngredients.reduce((acc, curr) => acc + curr.percentage, 0);
+    const denominator = 1 + (hydration/100) + 0.02 + (sumExtras/100);
+    const totalFlour = totalDough / denominator;
+
     const totalWater = totalFlour * (hydration/100);
     const starterAmount = totalFlour * starterRatio;
 
     // Calculate starter feeding amounts
     let feedingText;
     if(starterType === 'stiff') {
-        // Stiff starter ratio: 1:5:2.5 (mature:flour:water)
         const totalParts = 1 + 5 + 2.5;
         const matureStarter = Math.round(starterAmount / totalParts);
         const starterFlour = Math.round(matureStarter * 5);
         const starterWater = Math.round(matureStarter * 2.5);
         feedingText = `Mix ${matureStarter}g mature starter with ${starterFlour}g flour and ${starterWater}g water`;
     } else {
-        // Wet starter ratio: 1:4:4 (mature:flour:water)
         const totalParts = 1 + 4 + 4;
         const matureStarter = Math.round(starterAmount / totalParts);
         const starterFlour = Math.round(matureStarter * 4);
